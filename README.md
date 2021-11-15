@@ -1,2 +1,3 @@
-# Chips
+# Crisps
+
 An Linguistics Annotation Tool.
