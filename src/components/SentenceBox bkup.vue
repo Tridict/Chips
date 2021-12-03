@@ -1,12 +1,10 @@
 <template>
-  <div class="card my-3">
-    <div class="card-header">{{ title }} {{ content.text }}</div>
-
-    <div class="card-body" v-show="btnStates.currentOpt > 0">
-      <!-- <h5 class="card-title">Special title treatment</h5> -->
-      <!-- <p class="card-text">
-        {{ content.text }}
-      </p> -->
+  <el-row class="sentence-container">
+    <el-card class="sentence-container-left card" shadow="hover">
+      <template #header>
+        <div class="sentence-title">{{ title }}</div>
+      </template>
+      <div class="sentence-content">{{ content.text }}</div>
       <div class="sentence-btns">
         <div
           class="text-btn space-btn"
@@ -32,36 +30,37 @@
           </div>
         </template>
       </div>
-      <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
-    </div>
-    
-    <div class="card-body" v-show="btnStates.currentOpt == 0">
-      <div>{{ content.text }}</div>
-    </div>
-
-
-
-
-
-
-
-    <div class="card-footer">
-      <div class="container toolbar">
-        <div class="row my-1">
-          <div class="col">
-            <button type="button" class="btn btn-primary btn-sm" @click="handleStart">{{ startBtnText }}</button>
-            <button type="button" class="btn btn-primary btn-sm" @click="showTextarea = false">其他按钮</button>
-            <button type="button" class="btn btn-success btn-sm" @click="handleConfirm" v-show="showConfirm">确定{{ selectedSpan }}</button>
-          </div>
-        </div>
-        <div class="row my-1" v-show="showTextarea">
-          <div class="col">
-            <textarea v-model="textarea" rows="3" class="form-control"></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+      <el-row class="toolbar">
+        <el-button size="mini" plain @click="handleStart">
+          {{ startBtnText }}
+        </el-button>
+        <el-button size="mini" plain @click="showTextarea = false">
+          其他按钮
+        </el-button>
+        <el-button
+          size="mini"
+          type="success"
+          plain
+          @click="handleConfirm"
+          v-show="showConfirm"
+        >
+          确定{{ selectedSpan }}
+        </el-button>
+      </el-row>
+    </el-card>
+    <el-card
+      v-show="showTextarea"
+      class="sentence-container-right"
+      shadow="hover"
+    >
+      <el-input
+        v-model="textarea"
+        :rows="6"
+        type="textarea"
+        placeholder="Please input"
+      />
+    </el-card>
+  </el-row>
 </template>
 
 <script>
@@ -75,12 +74,12 @@ const forceBlur = (event) => {
   target.blur();
 };
 
-// import { ElButton, ElRow, ElCard, ElInput } from "element-plus";
+import { ElButton, ElRow, ElCard, ElInput } from "element-plus";
 import { reactive, toRefs, computed } from "vue";
 
 export default {
   name: "SentenceBox",
-  // components: { ElButton, ElRow, ElCard, ElInput },
+  components: { ElButton, ElRow, ElCard, ElInput },
   setup() {
     const data = reactive({
       textarea: "",
@@ -178,7 +177,6 @@ export default {
       startBtnText,
       showConfirm,
       selectedSpan,
-      btnStates,
       // currentOpt: toRef(btnStates.currentOpt),
       handleSelect,
       handleStart,
@@ -239,8 +237,7 @@ export default {
 }
 
 .toolbar {
-  /* padding-top: 1rem; */
+  padding-top: 1rem;
   /* border-top: 1px solid var(--el-border-color-base); */
 }
-.toolbar .btn {margin: 0 0.5em 0 0;}
 </style>
