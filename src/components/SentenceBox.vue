@@ -9,7 +9,7 @@
       </p> -->
       <div class="sentence-btns">
         <div
-          class="text-btn space-btn"
+          class="in-stc-btn space-btn"
           :class="getBtnClass(0, 'space')"
           @click="handleSelect(0, 'space')"
         >
@@ -17,14 +17,14 @@
         </div>
         <template v-for="(char, i) in content.text" :key="i">
           <div
-            class="text-btn"
+            class="in-stc-btn text-btn"
             :class="getBtnClass(i, 'char')"
             @click="handleSelect(i, 'char')"
           >
             <span>{{ char }}</span>
           </div>
           <div
-            class="text-btn space-btn"
+            class="in-stc-btn space-btn"
             :class="getBtnClass(i + 1, 'space')"
             @click="handleSelect(i + 1, 'space')"
           >
@@ -135,7 +135,13 @@ export default {
         return "between";
       } else if (id == btnStates.rightId && type == btnStates.rightType) {
         return "right-side";
-      }
+      } else if (
+        type == "space" &&
+        id > btnStates.leftId &&
+        id <= btnStates.rightId
+      ) {
+        return "between";
+      } 
     };
 
     const handleStart = (event) => {
@@ -211,31 +217,85 @@ export default {
   display: flex;
   flex-wrap: wrap;
 }
+
+.in-stc-btn {
+  margin: 0.25em 0;
+}
+.in-stc-btn:hover {
+  background: #fdf6ec;
+}
 .text-btn {
-  width: 1.5em;
+  width: 1.25em;
   height: 1.5em;
   padding: 0;
-  margin: 0.1em;
   text-align: center;
   border: solid 1px #eee;
-  border-radius: 0.25em;
+  border-left: none;
+  border-right: none;
 }
 .text-btn:hover {
-  border-color: #aaa;
+  border-color: #f5dab1;
 }
 .space-btn {
   width: 0.5em;
+  height: 1.5em;
+  padding: 0;
+  text-align: center;
+  border: solid 1px #eee;
+}
+.in-stc-btn:first-child {
+  border-left: solid 1px #eee;
+}
+.in-stc-btn:last-child {
+  border-right: solid 1px #eee;
+}
+.space-btn:hover {
+  border-color: #aaa;
+  background: #aaa;
 }
 
 .left-side {
-  background: rgb(240, 255, 220);
+  background: #ecf5ff;
+  border: solid 1px #b3d8ff;
+  color: #409eff;
+  border-top-left-radius: 0.25em;
+  border-bottom-left-radius: 0.25em;
 }
-
-.between {
-  background: rgb(220, 255, 220);
+.text-btn.left-side {
+  border-right: none;
 }
 .right-side {
-  background: rgb(200, 255, 220);
+  background: #ecf5ff;
+  border: solid 1px #b3d8ff;
+  color: #409eff;
+  border-top-right-radius: 0.25em;
+  border-bottom-right-radius: 0.25em;
+}
+.text-btn.right-side {
+  border-left: none;
+}
+.left-side:hover, .right-side:hover {
+  border-color: #b3d8ff;
+  background: #ecf5ff;
+}
+
+.left-side:first-child {
+  border-left: solid 1px #b3d8ff;
+}
+.right-side:last-child {
+  border-right: solid 1px #b3d8ff;
+}
+
+
+
+.between {
+  background: #f0f9eb;
+  border-color: #c2e7b0;
+  color: #67c23a;
+}
+.between:hover {
+  border-color: #c2e7b0;
+  background: #f0f9eb;
 }
 
 .toolbar {
