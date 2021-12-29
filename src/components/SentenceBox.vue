@@ -8,7 +8,10 @@
           <div class="col-12 col-xl-6">
             <div class="container my-2 py-2 border border-eee rounded">
               <div class="row my-2">
-                <div v-show="btnStates.currentOpt > 0" class="sentence-btns">
+                <div
+                  v-show="btnStates.currentOpt > OPT_STATUS.readonly"
+                  class="sentence-btns"
+                >
                   <div
                     class="in-stc-btn space-btn"
                     :class="getBtnClass(0, 'space')"
@@ -33,7 +36,9 @@
                     </div>
                   </template>
                 </div>
-                <div v-show="btnStates.currentOpt == 0">{{ content.text }}</div>
+                <div v-show="btnStates.currentOpt === OPT_STATUS.readonly">
+                  {{ content.text }}
+                </div>
               </div>
 
               <hr class="row bg-default my-2" />
@@ -42,15 +47,19 @@
                   <button
                     type="button"
                     class="btn btn-primary btn-sm"
-                    @click="handleStart"
-                    v-if="btnStates.currentOpt != 1"
-                  >{{ startBtnText }}</button>
+                    @click="onStartOrReset"
+                    v-if="btnStates.currentOpt !== OPT_STATUS.ready"
+                  >
+                    {{ startBtnText }}
+                  </button>
                   <button
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="handleConfirm"
-                    v-show="showConfirm"
-                  >确定选取 {{ selectedSpan }}</button>
+                    @click="onConfirm"
+                    v-show="isShowConfirmBtn"
+                  >
+                    确定选取 {{ selectedSpan }}
+                  </button>
                   <!-- <button
                     type="button"
                     class="btn btn-primary btn-sm"
@@ -67,9 +76,23 @@
           </div>
           <div class="col-12 col-xl-6">
             <div class="container my-2 py-2 border border-eee rounded">
-              <div class="row my-1" v-show="+btnStates.currentOpt > 3">
+              <div
+                class="row my-1"
+                v-show="+btnStates.currentOpt > OPT_STATUS.complete"
+              >
                 <div class="col">
-                  <textarea v-model="textarea" rows="3" class="form-control"></textarea>
+                  <textarea
+                    v-model="textarea"
+                    rows="3"
+                    class="form-control"
+                  ></textarea>
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="onSubmit"
+                  >
+                    确定
+                  </button>
                 </div>
               </div>
             </div>
@@ -87,12 +110,101 @@
 import { reactive, toRefs, computed } from "vue";
 import { forceBlur } from "@/utils/forceBlur.js";
 
+const OPT_STATUS = {
+  readonly: 0,
+  ready: 1,
+  selecting: 2,
+  complete: 3,
+  annotate: 4
+};
+
+const useSpan = (btnStates) => {
+  const spanStates = reactive({
+    leftId: undefined,
+    leftType: "",
+    rightId: undefined,
+    rightType: ""
+  });
+
+  const selectedSpan = computed(() => {
+    // return ` [${spanStates.leftId}, ${spanStates.rightId}]`;
+    return [spanStates.leftId, spanStates.rightId];
+  });
+
+  // 选取文本片段
+  const handleSelect = (id, type) => {
+    if (btnStates.currentOpt === OPT_STATUS.ready) {
+      spanStates.leftId = id;
+      spanStates.leftType = type;
+      btnStates.currentOpt += 1;
+    } else if (btnStates.currentOpt === OPT_STATUS.selecting) {
+      if (id < spanStates.leftId) {
+        spanStates.rightId = spanStates.leftId;
+        spanStates.rightType = spanStates.leftType;
+        spanStates.leftId = id;
+        spanStates.leftType = type;
+      } else {
+        spanStates.rightId = id;
+        spanStates.rightType = type;
+      }
+      btnStates.currentOpt += 1;
+    }
+
+    btnStates.histroy.push(btnStates.currentOpt);
+  };
+
+  // 重新标注：清除选择
+  const clearSelect = () => {
+    Object.assign(spanStates, {
+      leftId: undefined,
+      leftType: "",
+      rightId: undefined,
+      rightType: ""
+    });
+  };
+
+  // 控制选取后的文字样式
+  const getBtnClass = (id, type) => {
+    if (
+      id == spanStates.rightId &&
+      type == spanStates.rightType &&
+      id == spanStates.leftId &&
+      type == spanStates.leftType
+    ) {
+      return "left-side right-side";
+    } else if (id == spanStates.leftId && type == spanStates.leftType) {
+      return "left-side";
+    } else if (
+      type == "char" &&
+      id >= spanStates.leftId &&
+      id < spanStates.rightId
+    ) {
+      return "between";
+    } else if (id == spanStates.rightId && type == spanStates.rightType) {
+      return "right-side";
+    } else if (
+      type == "space" &&
+      id > spanStates.leftId &&
+      id <= spanStates.rightId
+    ) {
+      return "between";
+    }
+  };
+
+  return {
+    selectedSpan,
+    handleSelect,
+    clearSelect,
+    getBtnClass
+  };
+};
+
 export default {
   name: "SentenceBox",
   props: {
     title: {
       type: String,
-      default: "#"
+      require: true
     },
     content: {
       type: Object,
@@ -104,103 +216,56 @@ export default {
       }
     }
   },
-  setup() {
+  emits: ["submit"],
+  setup(props, ctx) {
     const data = reactive({
-      // showTextarea: false,
-      textarea: ""
+      textarea: "" // 暂存输入的内容
     });
+
     const btnStates = reactive({
-      // options: ["readonly", "waiting", "selecting", "complete"],
-      currentOpt: 0,
-      histroy: [],
-      leftId: undefined,
-      leftType: "",
-      rightId: undefined,
-      rightType: ""
+      currentOpt: OPT_STATUS.readonly,
+      histroy: []
     });
 
-    const handleSelect = (id, type) => {
-      // console.log(id, type);
-      // const currrentState = btnStates.options[btnStates.currentOpt];
-      if (btnStates.currentOpt === 1) {
-        btnStates.leftId = id;
-        btnStates.leftType = type;
-        btnStates.currentOpt += 1;
-      } else if (btnStates.currentOpt === 2) {
-        if (id < btnStates.leftId) {
-          btnStates.rightId = btnStates.leftId;
-          btnStates.rightType = btnStates.leftType;
-          btnStates.leftId = id;
-          btnStates.leftType = type;
-        } else {
-          btnStates.rightId = id;
-          btnStates.rightType = type;
-        }
-        btnStates.currentOpt += 1;
-      }
+    const { selectedSpan, handleSelect, clearSelect, getBtnClass } = useSpan(
+      btnStates
+    );
 
-      btnStates.histroy.push(btnStates.currentOpt);
-    };
-
-    const getBtnClass = (id, type) => {
-      if (id == btnStates.rightId && type == btnStates.rightType && id == btnStates.leftId && type == btnStates.leftType) {
-        return "left-side right-side";
-      } else if (id == btnStates.leftId && type == btnStates.leftType) {
-        return "left-side";
-      } else if (
-        type == "char" &&
-        id >= btnStates.leftId &&
-        id < btnStates.rightId
-      ) {
-        return "between";
-      } else if (id == btnStates.rightId && type == btnStates.rightType) {
-        return "right-side";
-      } else if (
-        type == "space" &&
-        id > btnStates.leftId &&
-        id <= btnStates.rightId
-      ) {
-        return "between";
-      }
-    };
-
-    const handleStart = (event) => {
-      if (btnStates.currentOpt > 1) {
-        // 重新标注
-        Object.assign(btnStates, {
-          leftId: undefined,
-          leftType: "",
-          rightId: undefined,
-          rightType: ""
-        });
+    // 点击“新增span/重新选取”按钮
+    const onStartOrReset = (event) => {
+      if (btnStates.currentOpt > OPT_STATUS.ready) {
+        clearSelect(); // 重新标注
       } else {
         // 开始标注
       }
-      btnStates.currentOpt = 1;
+      btnStates.currentOpt = OPT_STATUS.ready;
       forceBlur(event);
     };
 
-    const handleConfirm = (event) => {
+    // 点击“确定选取“按钮
+    const onConfirm = (event) => {
       data.showTextarea = true;
       btnStates.currentOpt += 1;
       forceBlur(event);
     };
 
-    const showConfirm = computed(() => {
-      return btnStates.currentOpt === 3;
+    // 点击textarea下方的“确定”按钮
+    const onSubmit = () => {
+      ctx.emit("submit", {id: props.content.id, annotation: { label: data.textarea, span: selectedSpan.value }});
+    };
+
+    const isShowConfirmBtn = computed(() => {
+      return btnStates.currentOpt === OPT_STATUS.complete;
     });
-    const selectedSpan = computed(() => {
-      return ` [${btnStates.leftId}, ${btnStates.rightId}]`;
-    });
+
     const startBtnText = computed(() => {
-      return btnStates.currentOpt > 1
+      return btnStates.currentOpt > OPT_STATUS.ready
         ? "重新选取"
-        : btnStates.currentOpt == 1
-          ? "请选取"
-          : "新增span";
+        : btnStates.currentOpt == OPT_STATUS.ready
+        ? "请选取"
+        : "新增span";
     });
     const toolInfo = computed(() => {
-      // options: ["readonly", "waiting", "selecting", "complete", "annotate"],
       const infos = [
         undefined,
         "请选取要标注的文本片段的开始位置",
@@ -213,16 +278,17 @@ export default {
 
     return {
       ...toRefs(data),
-      startBtnText,
-      showConfirm,
-      selectedSpan,
+      OPT_STATUS,
       btnStates,
-      // currentOpt: toRef(btnStates.currentOpt),
+      startBtnText,
+      toolInfo,
+      selectedSpan,
+      isShowConfirmBtn,
       handleSelect,
-      handleStart,
-      handleConfirm,
       getBtnClass,
-      toolInfo
+      onStartOrReset,
+      onConfirm,
+      onSubmit
     };
   }
 };
