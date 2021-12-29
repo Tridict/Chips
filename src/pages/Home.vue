@@ -1,17 +1,15 @@
 <template>
-  <SentenceBox />
-  <SentenceBox />
-  <SentenceBox />
-  <bs-card />
+  <SentenceBox title="#" />
+  <SentenceBox title="xx" />
+  <SentenceBox title="ee" />
 </template>
 
 <script>
 import SentenceBox from "@/components/SentenceBox.vue";
-import BsCard from '../components/bs/BsCard.vue';
 
 export default {
   name: "Home",
-  components: { SentenceBox, BsCard },
+  components: { SentenceBox },
   setup() {
     return {};
   }

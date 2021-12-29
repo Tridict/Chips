@@ -1,95 +1,113 @@
 <template>
-  <div class="card my-3">
-    <div class="card-header">{{ title }} {{ content.text }}</div>
+  <div class="card my-4">
+    <div class="card-header">{{ title }}</div>
 
-    <div class="card-body" v-show="btnStates.currentOpt > 0">
-      <!-- <h5 class="card-title">Special title treatment</h5> -->
-      <!-- <p class="card-text">
-        {{ content.text }}
-      </p> -->
-      <div class="sentence-btns">
-        <div
-          class="in-stc-btn space-btn"
-          :class="getBtnClass(0, 'space')"
-          @click="handleSelect(0, 'space')"
-        >
-          <span></span>
+    <div class="card-body">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-xl-6">
+            <div class="container my-2 py-2 border border-eee rounded">
+              <div class="row my-2">
+                <div v-show="btnStates.currentOpt > 0" class="sentence-btns">
+                  <div
+                    class="in-stc-btn space-btn"
+                    :class="getBtnClass(0, 'space')"
+                    @click="handleSelect(0, 'space')"
+                  >
+                    <span></span>
+                  </div>
+                  <template v-for="(char, i) in content.text" :key="i">
+                    <div
+                      class="in-stc-btn text-btn"
+                      :class="getBtnClass(i, 'char')"
+                      @click="handleSelect(i, 'char')"
+                    >
+                      <span>{{ char }}</span>
+                    </div>
+                    <div
+                      class="in-stc-btn space-btn"
+                      :class="getBtnClass(i + 1, 'space')"
+                      @click="handleSelect(i + 1, 'space')"
+                    >
+                      <span></span>
+                    </div>
+                  </template>
+                </div>
+                <div v-show="btnStates.currentOpt == 0">{{ content.text }}</div>
+              </div>
+
+              <hr class="row bg-default my-2" />
+              <div class="row my-2">
+                <div class="col toolbar">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    @click="handleStart"
+                    v-if="btnStates.currentOpt != 1"
+                  >{{ startBtnText }}</button>
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="handleConfirm"
+                    v-show="showConfirm"
+                  >确定选取 {{ selectedSpan }}</button>
+                  <!-- <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    @click="showTextarea = false"
+                  >其他按钮</button>-->
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <p class="tool__info text-muted my-0">{{ toolInfo }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-xl-6">
+            <div class="container my-2 py-2 border border-eee rounded">
+              <div class="row my-1" v-show="+btnStates.currentOpt > 3">
+                <div class="col">
+                  <textarea v-model="textarea" rows="3" class="form-control"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <template v-for="(char, i) in content.text" :key="i">
-          <div
-            class="in-stc-btn text-btn"
-            :class="getBtnClass(i, 'char')"
-            @click="handleSelect(i, 'char')"
-          >
-            <span>{{ char }}</span>
-          </div>
-          <div
-            class="in-stc-btn space-btn"
-            :class="getBtnClass(i + 1, 'space')"
-            @click="handleSelect(i + 1, 'space')"
-          >
-            <span></span>
-          </div>
-        </template>
       </div>
-      <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
-    </div>
-    
-    <div class="card-body" v-show="btnStates.currentOpt == 0">
-      <div>{{ content.text }}</div>
     </div>
 
-
-
-
-
-
-
-    <div class="card-footer">
-      <div class="container toolbar">
-        <div class="row my-1">
-          <div class="col">
-            <button type="button" class="btn btn-primary btn-sm" @click="handleStart">{{ startBtnText }}</button>
-            <button type="button" class="btn btn-primary btn-sm" @click="showTextarea = false">其他按钮</button>
-            <button type="button" class="btn btn-success btn-sm" @click="handleConfirm" v-show="showConfirm">确定{{ selectedSpan }}</button>
-          </div>
-        </div>
-        <div class="row my-1" v-show="showTextarea">
-          <div class="col">
-            <textarea v-model="textarea" rows="3" class="form-control"></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- <div class="card-footer">
+    </div>-->
   </div>
 </template>
 
 <script>
-// 点击按钮后手动失焦
-const forceBlur = (event) => {
-  let target = event.target;
-  console.log(target);
-  if (target.parentNode.className.split(/\s+/).includes("el-button")) {
-    target = target.parentNode;
-  }
-  target.blur();
-};
-
-// import { ElButton, ElRow, ElCard, ElInput } from "element-plus";
 import { reactive, toRefs, computed } from "vue";
+import { forceBlur } from "@/utils/forceBlur.js";
 
 export default {
   name: "SentenceBox",
-  // components: { ElButton, ElRow, ElCard, ElInput },
+  props: {
+    title: {
+      type: String,
+      default: "#"
+    },
+    content: {
+      type: Object,
+      default: () => {
+        return {
+          text: "这是句子内容，算是body部分。一个字符串...",
+          annotations: []
+        };
+      }
+    }
+  },
   setup() {
     const data = reactive({
-      textarea: "",
-      showTextarea: false,
-      title: "1.",
-      content: {
-        text: "这是句子内容，算是body部分。一个字符串...",
-        annotations: []
-      }
+      // showTextarea: false,
+      textarea: ""
     });
     const btnStates = reactive({
       // options: ["readonly", "waiting", "selecting", "complete"],
@@ -125,7 +143,9 @@ export default {
     };
 
     const getBtnClass = (id, type) => {
-      if (id == btnStates.leftId && type == btnStates.leftType) {
+      if (id == btnStates.rightId && type == btnStates.rightType && id == btnStates.leftId && type == btnStates.leftType) {
+        return "left-side right-side";
+      } else if (id == btnStates.leftId && type == btnStates.leftType) {
         return "left-side";
       } else if (
         type == "char" &&
@@ -141,7 +161,7 @@ export default {
         id <= btnStates.rightId
       ) {
         return "between";
-      } 
+      }
     };
 
     const handleStart = (event) => {
@@ -162,6 +182,7 @@ export default {
 
     const handleConfirm = (event) => {
       data.showTextarea = true;
+      btnStates.currentOpt += 1;
       forceBlur(event);
     };
 
@@ -173,10 +194,21 @@ export default {
     });
     const startBtnText = computed(() => {
       return btnStates.currentOpt > 1
-        ? "重新标注"
+        ? "重新选取"
         : btnStates.currentOpt == 1
-        ? "请标注"
-        : "开始标注";
+          ? "请选取"
+          : "新增span";
+    });
+    const toolInfo = computed(() => {
+      // options: ["readonly", "waiting", "selecting", "complete", "annotate"],
+      const infos = [
+        undefined,
+        "请选取要标注的文本片段的开始位置",
+        "请选取要标注的文本片段的结束位置",
+        "请确定",
+        "请开始标注或加入span列表"
+      ];
+      return infos[+btnStates.currentOpt];
     });
 
     return {
@@ -189,13 +221,30 @@ export default {
       handleSelect,
       handleStart,
       handleConfirm,
-      getBtnClass
+      getBtnClass,
+      toolInfo
     };
   }
 };
 </script>
 
 <style scoped>
+.my-0 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* .border-eee {
+  border-color: #eee;
+} */
+
+.bg-default {
+  background-color: #dee2e6;
+}
+hr.bg-default {
+  opacity: 1;
+}
+
 .sentence-container {
   width: 100%;
   margin: 1rem auto;
@@ -205,9 +254,9 @@ export default {
   flex: 1;
   min-width: 300px;
 }
-.sentence-title {
-  /* border-bottom: 1px solid var(--el-border-color-base); */
-}
+/* .sentence-title {
+  border-bottom: 1px solid var(--el-border-color-base);
+} */
 
 .sentence-content {
   padding: 2rem 0;
@@ -216,6 +265,7 @@ export default {
 .sentence-btns {
   display: flex;
   flex-wrap: wrap;
+  font-size: 1.25em;
 }
 
 .in-stc-btn {
@@ -274,7 +324,12 @@ export default {
 .text-btn.right-side {
   border-left: none;
 }
-.left-side:hover, .right-side:hover {
+.text-btn.left-side.right-side {
+  border-left: solid 1px #b3d8ff;
+  border-right: solid 1px #b3d8ff;
+}
+.left-side:hover,
+.right-side:hover {
   border-color: #b3d8ff;
   background: #ecf5ff;
 }
@@ -286,8 +341,6 @@ export default {
   border-right: solid 1px #b3d8ff;
 }
 
-
-
 .between {
   background: #f0f9eb;
   border-color: #c2e7b0;
@@ -298,9 +351,11 @@ export default {
   background: #f0f9eb;
 }
 
-.toolbar {
-  /* padding-top: 1rem; */
-  /* border-top: 1px solid var(--el-border-color-base); */
+/* .toolbar {
+  padding-top: 1rem;
+  border-top: 1px solid var(--el-border-color-base);
+} */
+.toolbar .btn {
+  margin: 0 0.5em 0 0;
 }
-.toolbar .btn {margin: 0 0.5em 0 0;}
 </style>
