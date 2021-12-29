@@ -5,9 +5,11 @@
     <div class="card-body">
       <div class="container">
         <div class="row">
-          <div class="col-12 col-xl-6">
+          <!-- 句子区域 -->
+          <div class="sentence-area col-12 col-xl-6">
             <div class="container my-2 py-2 border border-eee rounded">
-              <div class="row my-2">
+              <!-- 标注的句子 -->
+              <div class="sentence-wrap row my-2">
                 <div
                   v-show="btnStates.currentOpt > OPT_STATUS.readonly"
                   class="sentence-btns"
@@ -42,8 +44,10 @@
               </div>
 
               <hr class="row bg-default my-2" />
+
+              <!-- 按钮区域 -->
               <div class="row my-2">
-                <div class="col toolbar">
+                <div class="toolbar col">
                   <button
                     type="button"
                     class="btn btn-primary btn-sm"
@@ -60,21 +64,31 @@
                   >
                     确定选取 {{ selectedSpan }}
                   </button>
-                  <!-- <button
+                  <button
+                    v-if="btnStates.currentOpt > OPT_STATUS.readonly"
                     type="button"
-                    class="btn btn-primary btn-sm"
-                    @click="showTextarea = false"
-                  >其他按钮</button>-->
+                    class="btn btn-success btn-sm"
+                    @click="onFinish"
+                  >
+                    结束标注
+                  </button>
+                  <!-- <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                @click="showTextarea = false"
+              >其他按钮</button>-->
                 </div>
               </div>
-              <div class="row">
+              <!-- 按钮底部操作说明指南 -->
+              <div class="tool-info-wrap row">
                 <div class="col">
                   <p class="tool__info text-muted my-0">{{ toolInfo }}</p>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-12 col-xl-6">
+          <!-- 文本区域 -->
+          <div class="annotate-area col-12 col-xl-6">
             <div class="container my-2 py-2 border border-eee rounded">
               <div
                 class="row my-1"
@@ -91,9 +105,12 @@
                     class="btn btn-success btn-sm"
                     @click="onSubmit"
                   >
-                    确定
+                    确定新增
                   </button>
                 </div>
+              </div>
+              <div class="existed-annotations">
+                {{ content.annotations }}
               </div>
             </div>
           </div>
@@ -102,7 +119,7 @@
     </div>
 
     <!-- <div class="card-footer">
-    </div>-->
+</div>-->
   </div>
 </template>
 
@@ -251,8 +268,23 @@ export default {
 
     // 点击textarea下方的“确定”按钮
     const onSubmit = () => {
-      ctx.emit("submit", {id: props.content.id, annotation: { label: data.textarea, span: selectedSpan.value }});
+      // 提交当前数据
+      ctx.emit("submit", {
+        id: props.content.id,
+        annotation: { label: data.textarea, span: selectedSpan.value }
+      });
+      // 改变UI：可以开始下一段标注。
+      data.textarea = "";
+      clearSelect();
+      btnStates.currentOpt = OPT_STATUS.ready;
     };
+
+    // 点击"结束标注"按钮
+    const onFinish = () => {
+      btnStates.currentOpt = OPT_STATUS.readonly;
+      clearSelect(); 
+    }
+    
 
     const isShowConfirmBtn = computed(() => {
       return btnStates.currentOpt === OPT_STATUS.complete;
@@ -288,7 +320,8 @@ export default {
       getBtnClass,
       onStartOrReset,
       onConfirm,
-      onSubmit
+      onSubmit,
+      onFinish,
     };
   }
 };
