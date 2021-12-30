@@ -144,8 +144,7 @@ const useSpan = (btnStates) => {
   });
 
   const selectedSpan = computed(() => {
-    // return ` [${spanStates.leftId}, ${spanStates.rightId}]`;
-    return [spanStates.leftId, spanStates.rightId];
+    return [spanStates.leftId, spanStates.rightType === 'char' ? spanStates.rightId + 1 : spanStates.rightId];
   });
 
   // 选取文本片段
