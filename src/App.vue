@@ -9,20 +9,19 @@
         <a class="nav-link" :class="tab == TABS.schema ? 'active':''" href="#" @click="tab = TABS.schema">管理 Schema</a>
       </li>
       <!-- <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item">
         <a class="nav-link disabled">Disabled</a>
-      </li>-->
+      </li> -->
     </ul>
 
-    <Home v-if="tab == TABS.annotation" />
+    <Annotation v-if="tab == TABS.annotation" />
+    <Schema v-if="tab == TABS.schema" />
   </main>
 </template>
 
 <script>
 import { ref } from "vue";
-import Home from "@/pages/Home.vue";
+import Annotation from "@/pages/Annotation.vue";
+import Schema from "@/pages/Schema.vue";
 import NavBar from "@/components/NavBar.vue";
 
 const TABS = {
@@ -31,7 +30,7 @@ const TABS = {
 }
 
 export default {
-  components: { Home, NavBar },
+  components: { Annotation, Schema, NavBar },
   name: "App",
   setup() {
     const tab = ref(TABS.annotation);
