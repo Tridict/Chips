@@ -11,8 +11,8 @@
               <!-- 标注的句子 -->
               <div class="sentence-wrap row my-2">
                 <div
-                  v-show="btnStates.currentOpt > OPT_STATUS.readonly"
                   class="sentence-btns"
+                  :class="{'sentence-btns--readonly': isReadonly}"
                 >
                   <div
                     class="in-stc-btn space-btn"
@@ -38,9 +38,9 @@
                     </div>
                   </template>
                 </div>
-                <div v-show="btnStates.currentOpt === OPT_STATUS.readonly">
+                <!-- <div v-show="btnStates.currentOpt === OPT_STATUS.readonly">
                   {{ content.text }}
-                </div>
+                </div> -->
               </div>
 
               <hr class="row bg-default my-2" />
@@ -110,7 +110,23 @@
                 </div>
               </div>
               <div class="existed-annotations">
-                {{ content.annotations }}
+                <div
+                  class="existed-annotations__item row"
+                  v-for="(item, idx) in content.annotations"
+                  :key="idx"
+                  @mouseover="onHoverExistedAnnotations(item.span)"
+                  @mouseout="onHoverEnd"
+                >
+                  <div class="existed-annotations__item__span col-1">
+                    {{ item.span[0] }}
+                  </div>
+                  <div class="existed-annotations__item__label col-4">
+                    {{ item.label }}
+                  </div>
+                  <div class="existed-annotations__item__span col-1">
+                    {{ item.span[1] }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -142,9 +158,20 @@ const useSpan = (btnStates) => {
     rightId: undefined,
     rightType: ""
   });
+  const spanStatesBackup = reactive({
+    leftId: undefined,
+    leftType: "",
+    rightId: undefined,
+    rightType: ""
+  });
 
   const selectedSpan = computed(() => {
-    return [spanStates.leftId, spanStates.rightType === 'char' ? spanStates.rightId + 1 : spanStates.rightId];
+    return [
+      spanStates.leftId,
+      spanStates.rightType === "char"
+        ? spanStates.rightId + 1
+        : spanStates.rightId
+    ];
   });
 
   // 选取文本片段
@@ -180,7 +207,7 @@ const useSpan = (btnStates) => {
   };
 
   // 控制选取后的文字样式
-  const getBtnClass = (id, type) => {
+  const getAnnotateBtnClass = (id, type) => {
     if (
       id == spanStates.rightId &&
       type == spanStates.rightType &&
@@ -207,8 +234,44 @@ const useSpan = (btnStates) => {
     }
   };
 
+  // 控制hover时的文字样式
+  const getHoverClass = (id, type) => {
+    if (id >= spanStatesBackup.leftId && id < spanStatesBackup.rightId) {
+      return "highlight"
+    } else if (id === spanStatesBackup.rightId && type === "space") {
+      return "highlight"
+    } else {
+      return ""
+    }
+  }
+
+  const getBtnClass = (id, type) => {
+    return getAnnotateBtnClass(id, type) + " " + getHoverClass(id, type)
+  }
+
+  // 鼠标移到已有标注上时，显示高亮
+  const onHoverExistedAnnotations = (span) => {
+    Object.assign(spanStatesBackup, {
+      leftId: span[0],
+      leftType: "space",
+      rightId: span[1],
+      rightType: "space"
+    });
+  };
+
+  const onHoverEnd = () => {
+    Object.assign(spanStatesBackup, {
+      leftId: undefined,
+      leftType: "",
+      rightId: undefined,
+      rightType: ""
+    });
+  };
+
   return {
     selectedSpan,
+    onHoverExistedAnnotations,
+    onHoverEnd,
     handleSelect,
     clearSelect,
     getBtnClass
@@ -243,9 +306,18 @@ export default {
       histroy: []
     });
 
-    const { selectedSpan, handleSelect, clearSelect, getBtnClass } = useSpan(
-      btnStates
-    );
+    const isReadonly = computed(() => {
+      return btnStates.currentOpt === OPT_STATUS.readonly
+    })
+
+    const {
+      selectedSpan,
+      handleSelect,
+      clearSelect,
+      getBtnClass,
+      onHoverExistedAnnotations,
+      onHoverEnd
+    } = useSpan(btnStates);
 
     // 点击“新增span/重新选取”按钮
     const onStartOrReset = (event) => {
@@ -281,9 +353,8 @@ export default {
     // 点击"结束标注"按钮
     const onFinish = () => {
       btnStates.currentOpt = OPT_STATUS.readonly;
-      clearSelect(); 
-    }
-    
+      clearSelect();
+    };
 
     const isShowConfirmBtn = computed(() => {
       return btnStates.currentOpt === OPT_STATUS.complete;
@@ -315,12 +386,15 @@ export default {
       toolInfo,
       selectedSpan,
       isShowConfirmBtn,
+      isReadonly,
       handleSelect,
       getBtnClass,
       onStartOrReset,
       onConfirm,
       onSubmit,
       onFinish,
+      onHoverExistedAnnotations,
+      onHoverEnd
     };
   }
 };
@@ -366,11 +440,18 @@ hr.bg-default {
   font-size: 1.25em;
 }
 
+.sentence-btns--readonly > * {
+  border: none!important;
+}
+
 .in-stc-btn {
   margin: 0.25em 0;
 }
 .in-stc-btn:hover {
   background: #fdf6ec;
+}
+.in-stc-btn.highlight {
+  background: #e7d47f;
 }
 .text-btn {
   width: 1.25em;
@@ -455,5 +536,18 @@ hr.bg-default {
 } */
 .toolbar .btn {
   margin: 0 0.5em 0 0;
+}
+
+.existed-annotations__item {
+  margin-bottom: 3px;
+}
+.existed-annotations__item__label {
+  background: #b3d8ff;
+}
+.existed-annotations__item__span {
+  background: #c2e7b0;
+}
+.existed-annotations__item:hover > div {
+  background: #409eff;
 }
 </style>
