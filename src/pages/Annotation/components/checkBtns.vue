@@ -66,6 +66,7 @@ export default {
     const onAdd = (type) => {
       ctx.emit("add", type, newTagName.value);
       newTagName.value = "";
+      isShowInput.value = false;
     };
 
     return { newTagName, isShowInput, onCheck, onAdd };
