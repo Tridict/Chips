@@ -38,13 +38,39 @@
                     </div>
                   </template>
                 </div>
-                <!-- <div v-show="btnStates.currentOpt === OPT_STATUS.readonly">
-                  {{ content.text }}
-                </div> -->
               </div>
 
               <hr class="row bg-default my-2" />
-
+              <!-- 已标注内容区域 -->
+              <div
+                class="existed-annotations border border-eee rounded container"
+                v-if="content.annotations.length"
+              >
+                <div
+                  class="existed-annotations__item row"
+                  v-for="(item, idx) in content.annotations"
+                  :key="idx"
+                  @mouseover="onHoverExistedAnnotations(item.span)"
+                  @mouseout="onHoverEnd"
+                >
+                  <div class="existed-annotations__item__span col-1">
+                    {{ item?.span?.[0] || "旁批" }}
+                  </div>
+                  <div class="existed-annotations__item__label col-4">
+                    {{
+                      item.label || `${item.content.key}:${item.content.value}`
+                    }}
+                  </div>
+                  <div class="existed-annotations__item__span col-1">
+                    {{ item?.span?.[1] || "" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 右边区域 -->
+          <div class="annotate-area col-12 col-xl-6">
+            <div class="container my-2 py-2 border border-eee rounded">
               <!-- 按钮区域 -->
               <div class="row my-2">
                 <div class="toolbar col">
@@ -80,47 +106,12 @@
                   >
                     结束标注
                   </button>
-                  <!-- <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                @click="showTextarea = false"
-              >其他按钮</button>-->
                 </div>
               </div>
               <!-- 按钮底部操作说明指南 -->
               <div class="tool-info-wrap row">
                 <div class="col">
                   <p class="tool__info text-muted my-0">{{ toolInfo }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- 右边区域 -->
-          <div class="annotate-area col-12 col-xl-6">
-            <div class="container my-2 py-2 border border-eee rounded">
-              <!-- 已标注内容区域 -->
-              <div
-                class="existed-annotations border border-eee rounded container"
-                v-if="content.annotations.length"
-              >
-                <div
-                  class="existed-annotations__item row"
-                  v-for="(item, idx) in content.annotations"
-                  :key="idx"
-                  @mouseover="onHoverExistedAnnotations(item.span)"
-                  @mouseout="onHoverEnd"
-                >
-                  <div class="existed-annotations__item__span col-1">
-                    {{ item?.span?.[0] || "旁批" }}
-                  </div>
-                  <div class="existed-annotations__item__label col-4">
-                    {{
-                      item.label || `${item.content.key}:${item.content.value}`
-                    }}
-                  </div>
-                  <div class="existed-annotations__item__span col-1">
-                    {{ item?.span?.[1] || "" }}
-                  </div>
                 </div>
               </div>
 
@@ -141,11 +132,6 @@
                 v-show="+btnStates.currentOpt > OPT_STATUS.complete"
               >
                 <div class="col">
-                  <!-- <textarea
-                    v-model="textarea"
-                    rows="3"
-                    class="form-control"
-                  ></textarea> -->
                   <button
                     type="button"
                     class="btn btn-success btn-sm"
@@ -160,9 +146,6 @@
         </div>
       </div>
     </div>
-
-    <!-- <div class="card-footer">
-</div>-->
   </div>
 </template>
 
@@ -332,7 +315,6 @@ export default {
     const addAnnotation = inject("addAnnotation");
 
     const data = reactive({
-      textarea: "", // 暂存输入的内容
       isShowMetaInput: false,
       metaSlotsKeys: schema.getMetaSlots(),
       refTagList: schema.getRefTags(),
@@ -403,9 +385,7 @@ export default {
     };
     // 点击“确定选取“按钮
     const onConfirm = (event) => {
-      // data.showTextarea = true;
       btnStates.currentOpt += 1;
-      // updateTagList();
       forceBlur(event);
     };
     const onCheckTag = (idx) => {
@@ -417,7 +397,6 @@ export default {
       } else {
         schema.addClueTag(tagName);
       }
-      // updateTagList();
     };
     // 点击tagList下方的“确定”按钮
     const onSubmitAnnotation = () => {
@@ -505,15 +484,6 @@ export default {
 </script>
 
 <style scoped>
-.my-0 {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* .border-eee {
-  border-color: #eee;
-} */
-
 .bg-default {
   background-color: #dee2e6;
 }
@@ -521,22 +491,9 @@ hr.bg-default {
   opacity: 1;
 }
 
-.sentence-container {
-  width: 100%;
-  margin: 1rem auto;
-}
-.sentence-container-left,
-.sentence-container-right {
-  flex: 1;
-  min-width: 300px;
-}
-/* .sentence-title {
-  border-bottom: 1px solid var(--el-border-color-base);
-} */
-
-.sentence-content {
+/* .sentence-content {
   padding: 2rem 0;
-}
+} */
 
 .sentence-btns {
   display: flex;
@@ -634,10 +591,6 @@ hr.bg-default {
   background: #f0f9eb;
 }
 
-/* .toolbar {
-  padding-top: 1rem;
-  border-top: 1px solid var(--el-border-color-base);
-} */
 .toolbar .btn {
   margin: 0 0.5em 0 0;
 }

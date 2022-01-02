@@ -40,6 +40,13 @@
           >
             新增ClueTag
           </button>
+          <button
+            type="button"
+            class="btn btn-light btn-sm m-1"
+            @click="isShowInput = false"
+          >
+            取消
+          </button>
         </template>
       </div>
     </div>
