@@ -167,7 +167,7 @@
 </template>
 
 <script>
-import { reactive, toRefs, computed, inject } from "vue";
+import { reactive, toRefs, computed, inject, watch } from "vue";
 import { forceBlur } from "@/utils/forceBlur.js";
 import { Schema } from "@/utils/schema/Schema.js";
 import InputField from "./inputField.vue";
@@ -335,25 +335,42 @@ export default {
       textarea: "", // 暂存输入的内容
       isShowMetaInput: false,
       metaSlotsKeys: schema.getMetaSlots(),
-      tagList: computed(() => {
-        return [
-          ...schema.getRefTags().value.map((x) => {
-            return {
-              check: false,
-              text: x
-            };
-          }),
-          ...schema.getClueTags().value.map((x) => {
-            return {
-              check: false,
-              text: x
-            };
-          })
-        ];
-      })
+      refTagList: schema.getRefTags(),
+      clueTagList: schema.getClueTags(),
+      tagList: []
     });
 
-    // updateTagList();
+    const initTagList = () => {
+      data.tagList = [
+        ...data.refTagList.map((x) => {
+          return {
+            check: false,
+            text: x
+          };
+        }),
+        ...data.clueTagList.map((x) => {
+          return {
+            check: false,
+            text: x
+          };
+        })
+      ];
+
+      const watchTagList = (newVal, oldVal) => {
+        if (newVal.length === oldVal.length + 1) {
+          const newItem = newVal[newVal.length - 1];
+          data.tagList.push({
+            check: false,
+            text: newItem
+          });
+        }
+      };
+
+      watch(() => data.clueTagList, watchTagList);
+      watch(() => data.refTagList, watchTagList);
+    };
+
+    initTagList();
 
     const btnStates = reactive({
       currentOpt: OPT_STATUS.readonly,
