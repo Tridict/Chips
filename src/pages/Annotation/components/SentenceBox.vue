@@ -12,7 +12,7 @@
               <div class="sentence-wrap row my-2">
                 <div
                   class="sentence-btns"
-                  :class="{'sentence-btns--readonly': isReadonly}"
+                  :class="{ 'sentence-btns--readonly': isReadonly }"
                 >
                   <div
                     class="in-stc-btn space-btn"
@@ -48,6 +48,14 @@
               <!-- 按钮区域 -->
               <div class="row my-2">
                 <div class="toolbar col">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    :class="{ 'btn-success': isShowMetaInput }"
+                    @click="onToggleMeta"
+                  >
+                    {{ isShowMetaInput ? "结束旁批" : "新增旁批" }}
+                  </button>
                   <button
                     type="button"
                     class="btn btn-primary btn-sm"
@@ -87,29 +95,14 @@
               </div>
             </div>
           </div>
-          <!-- 文本区域 -->
+          <!-- 右边区域 -->
           <div class="annotate-area col-12 col-xl-6">
             <div class="container my-2 py-2 border border-eee rounded">
+              <!-- 已标注内容区域 -->
               <div
-                class="row my-1"
-                v-show="+btnStates.currentOpt > OPT_STATUS.complete"
+                class="existed-annotations border border-eee rounded container"
+                v-if="content.annotations.length"
               >
-                <div class="col">
-                  <textarea
-                    v-model="textarea"
-                    rows="3"
-                    class="form-control"
-                  ></textarea>
-                  <button
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="onSubmit"
-                  >
-                    确定新增
-                  </button>
-                </div>
-              </div>
-              <div class="existed-annotations">
                 <div
                   class="existed-annotations__item row"
                   v-for="(item, idx) in content.annotations"
@@ -118,14 +111,48 @@
                   @mouseout="onHoverEnd"
                 >
                   <div class="existed-annotations__item__span col-1">
-                    {{ item.span[0] }}
+                    {{ item?.span?.[0] || "旁批" }}
                   </div>
                   <div class="existed-annotations__item__label col-4">
-                    {{ item.label }}
+                    {{
+                      item.label || `${item.content.key}:${item.content.value}`
+                    }}
                   </div>
                   <div class="existed-annotations__item__span col-1">
-                    {{ item.span[1] }}
+                    {{ item?.span?.[1] || "" }}
                   </div>
+                </div>
+              </div>
+
+              <!-- 文本区域 -->
+              <InputField
+                :options="metaSlotsKeys"
+                v-show="isShowMetaInput"
+                @submit="onSubmitMeta"
+              />
+              <CheckBtns
+                :options="tagList"
+                v-show="+btnStates.currentOpt > OPT_STATUS.complete"
+                @check="onCheckTag"
+                @add="onAddTag"
+              />
+              <div
+                class="row my-1"
+                v-show="+btnStates.currentOpt > OPT_STATUS.complete"
+              >
+                <div class="col">
+                  <!-- <textarea
+                    v-model="textarea"
+                    rows="3"
+                    class="form-control"
+                  ></textarea> -->
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="onSubmitAnnotation"
+                  >
+                    确定
+                  </button>
                 </div>
               </div>
             </div>
@@ -140,8 +167,11 @@
 </template>
 
 <script>
-import { reactive, toRefs, computed } from "vue";
+import { reactive, toRefs, computed, inject } from "vue";
 import { forceBlur } from "@/utils/forceBlur.js";
+import { Schema } from "@/utils/schema/Schema.js";
+import InputField from "./inputField.vue";
+import CheckBtns from "./checkBtns.vue";
 
 const OPT_STATUS = {
   readonly: 0,
@@ -237,24 +267,24 @@ const useSpan = (btnStates) => {
   // 控制hover时的文字样式
   const getHoverClass = (id, type) => {
     if (id >= spanStatesBackup.leftId && id < spanStatesBackup.rightId) {
-      return "highlight"
+      return "highlight";
     } else if (id === spanStatesBackup.rightId && type === "space") {
-      return "highlight"
+      return "highlight";
     } else {
-      return ""
+      return "";
     }
-  }
+  };
 
   const getBtnClass = (id, type) => {
-    return getAnnotateBtnClass(id, type) + " " + getHoverClass(id, type)
-  }
+    return getAnnotateBtnClass(id, type) + " " + getHoverClass(id, type);
+  };
 
   // 鼠标移到已有标注上时，显示高亮
   const onHoverExistedAnnotations = (span) => {
     Object.assign(spanStatesBackup, {
-      leftId: span[0],
+      leftId: span?.[0] || 0,
       leftType: "space",
-      rightId: span[1],
+      rightId: span?.[1] || 0,
       rightType: "space"
     });
   };
@@ -280,6 +310,7 @@ const useSpan = (btnStates) => {
 
 export default {
   name: "SentenceBox",
+  components: { InputField, CheckBtns },
   props: {
     title: {
       type: String,
@@ -296,19 +327,38 @@ export default {
     }
   },
   emits: ["submit"],
-  setup(props, ctx) {
+  setup(props) {
+    const schema = new Schema();
+    const addAnnotation = inject("addAnnotation");
+
     const data = reactive({
-      textarea: "" // 暂存输入的内容
+      textarea: "", // 暂存输入的内容
+      isShowMetaInput: false,
+      metaSlotsKeys: schema.getMetaSlots(),
+      tagList: computed(() => {
+        return [
+          ...schema.getRefTags().value.map((x) => {
+            return {
+              check: false,
+              text: x
+            };
+          }),
+          ...schema.getClueTags().value.map((x) => {
+            return {
+              check: false,
+              text: x
+            };
+          })
+        ];
+      })
     });
+
+    // updateTagList();
 
     const btnStates = reactive({
       currentOpt: OPT_STATUS.readonly,
       histroy: []
     });
-
-    const isReadonly = computed(() => {
-      return btnStates.currentOpt === OPT_STATUS.readonly
-    })
 
     const {
       selectedSpan,
@@ -318,6 +368,11 @@ export default {
       onHoverExistedAnnotations,
       onHoverEnd
     } = useSpan(btnStates);
+
+    // 点击“新增旁批”按钮
+    const onToggleMeta = () => {
+      data.isShowMetaInput = !data.isShowMetaInput;
+    };
 
     // 点击“新增span/重新选取”按钮
     const onStartOrReset = (event) => {
@@ -329,37 +384,66 @@ export default {
       btnStates.currentOpt = OPT_STATUS.ready;
       forceBlur(event);
     };
-
     // 点击“确定选取“按钮
     const onConfirm = (event) => {
-      data.showTextarea = true;
+      // data.showTextarea = true;
       btnStates.currentOpt += 1;
+      // updateTagList();
       forceBlur(event);
     };
-
-    // 点击textarea下方的“确定”按钮
-    const onSubmit = () => {
+    const onCheckTag = (idx) => {
+      data.tagList[idx].check = !data.tagList[idx].check;
+    };
+    const onAddTag = (type, tagName) => {
+      if (type === "ref") {
+        schema.addRefTag(tagName);
+      } else {
+        schema.addClueTag(tagName);
+      }
+      // updateTagList();
+    };
+    // 点击tagList下方的“确定”按钮
+    const onSubmitAnnotation = () => {
       // 提交当前数据
-      ctx.emit("submit", {
-        id: props.content.id,
-        annotation: { label: data.textarea, span: selectedSpan.value }
+      data.tagList.forEach((x) => {
+        if (x.check) {
+          addAnnotation({
+            id: props.content.id,
+            annotation: {
+              label: x.text,
+              span: selectedSpan.value,
+              type: "annotation"
+            }
+          });
+          x.check = false;
+        }
       });
       // 改变UI：可以开始下一段标注。
-      data.textarea = "";
       clearSelect();
       btnStates.currentOpt = OPT_STATUS.ready;
     };
-
+    // 点击key value输入框后面的加号
+    const onSubmitMeta = (input) => {
+      addAnnotation({
+        id: props.content.id,
+        annotation: {
+          content: { key: input.key, value: input.value },
+          type: "meta"
+        }
+      });
+    };
     // 点击"结束标注"按钮
     const onFinish = () => {
       btnStates.currentOpt = OPT_STATUS.readonly;
       clearSelect();
     };
 
+    const isReadonly = computed(() => {
+      return btnStates.currentOpt === OPT_STATUS.readonly;
+    });
     const isShowConfirmBtn = computed(() => {
       return btnStates.currentOpt === OPT_STATUS.complete;
     });
-
     const startBtnText = computed(() => {
       return btnStates.currentOpt > OPT_STATUS.ready
         ? "重新选取"
@@ -377,21 +461,24 @@ export default {
       ];
       return infos[+btnStates.currentOpt];
     });
-
     return {
       ...toRefs(data),
       OPT_STATUS,
       btnStates,
+      selectedSpan,
+      isReadonly,
+      isShowConfirmBtn,
       startBtnText,
       toolInfo,
-      selectedSpan,
-      isShowConfirmBtn,
-      isReadonly,
       handleSelect,
       getBtnClass,
+      onToggleMeta,
       onStartOrReset,
       onConfirm,
-      onSubmit,
+      onCheckTag,
+      onAddTag,
+      onSubmitAnnotation,
+      onSubmitMeta,
       onFinish,
       onHoverExistedAnnotations,
       onHoverEnd
@@ -441,7 +528,7 @@ hr.bg-default {
 }
 
 .sentence-btns--readonly > * {
-  border: none!important;
+  border: none !important;
 }
 
 .in-stc-btn {
@@ -536,6 +623,11 @@ hr.bg-default {
 } */
 .toolbar .btn {
   margin: 0 0.5em 0 0;
+}
+
+.existed-annotations {
+  padding-top: 10px;
+  margin-top: 10px;
 }
 
 .existed-annotations__item {

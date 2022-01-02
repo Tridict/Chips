@@ -1,0 +1,112 @@
+import { ref, provide, readonly } from "vue";
+
+export const useSchema = () => {
+  const schema = ref(
+    JSON.stringify({
+      meta: {
+        author: "luke"
+      },
+      content: [
+        {
+          _type: "Slot",
+          frame: "CMR_META",
+          key: "todo"
+        },
+        {
+          _type: "Slot",
+          frame: "CMR_META",
+          key: "comment"
+        },
+        {
+          _type: "RefTag",
+          tagName: "Place"
+        },
+        {
+          _type: "RefTag",
+          tagName: "Shape"
+        },
+        {
+          _type: "RefTag",
+          tagName: "Shape.Actor"
+        },
+        {
+          _type: "RefTag",
+          tagName: "Shape.Vehicle"
+        },
+        {
+          _type: "RefTag",
+          tagName: "Shape.Concave"
+        },
+        {
+          _type: "RefTag",
+          tagName: "Shape.Part"
+        },
+        {
+          _type: "RefTag",
+          tagName: "Mass"
+        },
+        {
+          _type: "RefTag",
+          tagName: "VisualPattern"
+        },
+        {
+          _type: "ClueTag",
+          tagName: "SpatialTrigger"
+        },
+        {
+          _type: "IndTag",
+          tagName: "StartPoint"
+        },
+        {
+          _type: "IndTagAttr",
+          parent: "StartPoint",
+          tagName: "StartPoint.trigger"
+        },
+        {
+          _type: "IndTagAttr",
+          parent: "StartPoint",
+          tagName: "StartPoint.concretization"
+        },
+        {
+          _type: "IndTag",
+          tagName: "EndPoint"
+        },
+        {
+          _type: "IndTagAttr",
+          parent: "EndPoint",
+          tagName: "EndPoint.trigger"
+        },
+        {
+          _type: "IndTagAttr",
+          parent: "EndPoint",
+          tagName: "EndPoint.concretization"
+        },
+        {
+          _type: "IndTag",
+          tagName: "Position"
+        },
+        {
+          _type: "IndTag",
+          tagName: "Direction"
+        },
+        {
+          _type: "IndTag",
+          tagName: "Path"
+        },
+        {
+          _type: "IndTag",
+          tagName: "Region"
+        }
+      ]
+    })
+  );
+
+  const updateSchema = (newVal) => {
+    schema.value = newVal;
+  };
+
+  provide("schema", readonly(schema));
+  provide("updateSchema", updateSchema);
+
+  return { schema, updateSchema };
+};

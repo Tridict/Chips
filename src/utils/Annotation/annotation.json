@@ -1,0 +1,32 @@
+[
+  {
+    "id": 0,
+    "text": "这是第一句的内容，算是body部分。一个字符串...",
+    "annotations": [
+      {
+        "label": "111",
+        "span": [2, 5],
+        "type": "annotation"
+      },
+      {
+        "content": {
+          "key": "todo",
+          "value": "12345"
+        },
+        "type": "meta"
+      },
+      {
+        "content": {
+          "key": "todo",
+          "value": "6789"
+        },
+        "type": "meta"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "text": "一个字符串",
+    "annotations": []
+  }
+]

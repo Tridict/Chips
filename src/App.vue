@@ -20,8 +20,10 @@
 
 <script>
 import { ref } from "vue";
-import Annotation from "@/pages/Annotation.vue";
-import Schema from "@/pages/Schema.vue";
+import Annotation from "@/pages/Annotation/index.vue";
+import Schema from "@/pages/Schema/index.vue";
+import { useSchema } from "@/utils/schema/useSchema.js"
+import { useAnnotation } from "@/utils/Annotation/useAnnotation.js"
 import NavBar from "@/components/NavBar.vue";
 
 const TABS = {
@@ -34,7 +36,11 @@ export default {
   name: "App",
   setup() {
     const tab = ref(TABS.annotation);
-    return { tab, TABS };
+
+    useSchema();
+    useAnnotation();
+
+    return { tab, TABS};
   },
 };
 </script>
