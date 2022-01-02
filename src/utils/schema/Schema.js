@@ -1,20 +1,22 @@
-import { inject, computed } from "vue";
+import { inject, computed, watchEffect, reactive } from "vue";
 
 export class Schema {
   constructor() {
     const json = inject("schema");
     this.updateSchema = inject("updateSchema");
-    const infos = JSON.parse(json.value);
-    this.schemaMeta = infos.meta;
+    this.content = reactive({});
 
-    this.content = computed(() => {
-      return {
+    watchEffect(() => {
+      const infos = JSON.parse(json.value);
+      this.schemaMeta = infos.meta;
+
+      Object.assign(this.content, {
         metaSlots: infos.content.filter((x) => x._type === "Slot"),
         refTag: infos.content.filter((x) => x._type === "RefTag"),
         clueTags: infos.content.filter((x) => x._type === "ClueTag"),
         indTags: infos.content.filter((x) => x._type === "IndTag"),
         indTagAttrs: infos.content.filter((x) => x._type === "IndTagAttr")
-      };
+      });
     });
   }
 
@@ -22,25 +24,24 @@ export class Schema {
     const schema = {
       meta: this.schemaMeta,
       content: [
-        ...this.content.value.metaSlots,
-        ...this.content.value.refTag,
-        ...this.content.value.clueTags,
-        ...this.content.value.indTags,
-        ...this.content.value.indTagAttrs
+        ...this.content.metaSlots,
+        ...this.content.refTag,
+        ...this.content.clueTags,
+        ...this.content.indTags,
+        ...this.content.indTagAttrs
       ]
     };
-    console.log(schema)
     const json = JSON.stringify(schema);
     this.updateSchema(json);
   }
 
   // 旁批模式
   getMetaSlots() {
-    return computed(() => this.content.value.metaSlots.map((x) => x.key));
+    return computed(() => this.content.metaSlots.map((x) => x.key));
   }
 
   addMetaSlot(key) {
-    this.content.value.metaSlots.push({
+    this.content.metaSlots.push({
       _type: "Slot",
       frame: "CMR_META",
       key
@@ -50,15 +51,15 @@ export class Schema {
 
   // 注释模式
   getRefTags() {
-    return computed(() => this.content.value.refTag.map((x) => x.tagName));
+    return computed(() => this.content.refTag.map((x) => x.tagName));
   }
 
   getClueTags() {
-    return computed(() => this.content.value.clueTags.map((x) => x.tagName));
+    return computed(() => this.content.clueTags.map((x) => x.tagName));
   }
 
   addRefTag(tagName) {
-    this.content.value.refTag.push({
+    this.content.refTag.push({
       _type: "RefTag",
       tagName
     });
@@ -66,7 +67,7 @@ export class Schema {
   }
 
   addClueTag(tagName) {
-    this.content.value.clueTags.push({
+    this.content.clueTags.push({
       _type: "ClueTag",
       tagName
     });
@@ -76,10 +77,10 @@ export class Schema {
   // 创建-绑定模式
   getIndTags() {
     return computed(() =>
-      this.content.value.indTags.map((x) => {
+      this.content.indTags.map((x) => {
         return {
           tagName: x.tagName,
-          attrs: this.content.value.indTagAttrs
+          attrs: this.content.indTagAttrs
             .filter((x) => x.parent === x.tagName)
             .map((x) => x.tagName)
         };
@@ -88,12 +89,12 @@ export class Schema {
   }
 
   addIndTag(tagName, attrs) {
-    this.content.value.indTags.push({
+    this.content.indTags.push({
       _type: "IndTag",
       tagName
     });
-    this.content.value.indTagAttrs = [
-      ...this.content.value.indTagAttrs,
+    this.content.indTagAttrs = [
+      ...this.content.indTagAttrs,
       attrs.map((x) => {
         return {
           _type: "IndTagAttr",
