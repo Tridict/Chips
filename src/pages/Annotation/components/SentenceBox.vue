@@ -54,7 +54,7 @@
                   @mouseout="onHoverEnd"
                 >
                   <div class="existed-annotations__item__span col-1">
-                    {{ item?.span?.[0] || "旁批" }}
+                    {{ item?.span?.[0] ?? "旁批" }}
                   </div>
                   <div class="existed-annotations__item__label col-4">
                     {{
@@ -62,7 +62,7 @@
                     }}
                   </div>
                   <div class="existed-annotations__item__span col-1">
-                    {{ item?.span?.[1] || "" }}
+                    {{ item?.span?.[1] ?? "" }}
                   </div>
                 </div>
               </div>
@@ -503,10 +503,24 @@ hr.bg-default {
 
 .sentence-btns--readonly > * {
   border: none !important;
+  /* margin: calc(0.25em + 1px) 1px !important; */
+}
+
+.sentence-btns--readonly > .space-btn {
+  width: 0.1em;
+}
+.sentence-btns--readonly > .text-btn {
+  width: auto;
+  /* width: 1em; */
 }
 
 .in-stc-btn {
   margin: 0.25em 0;
+  height: 1.5em;
+  padding: 0;
+  text-align: center;
+  border: solid 1px #eee;
+  transition: width ease-in 0.1s;
 }
 .in-stc-btn:hover {
   background: #fdf6ec;
@@ -514,30 +528,24 @@ hr.bg-default {
 .in-stc-btn.highlight {
   background: #e7d47f;
 }
+.in-stc-btn:first-child {
+  border-left: solid 1px #eee;
+}
+.in-stc-btn:last-child {
+  border-right: solid 1px #eee;
+}
+
 .text-btn {
   width: 1.25em;
-  height: 1.5em;
-  padding: 0;
-  text-align: center;
-  border: solid 1px #eee;
   border-left: none;
   border-right: none;
 }
 .text-btn:hover {
   border-color: #f5dab1;
 }
+
 .space-btn {
   width: 0.5em;
-  height: 1.5em;
-  padding: 0;
-  text-align: center;
-  border: solid 1px #eee;
-}
-.in-stc-btn:first-child {
-  border-left: solid 1px #eee;
-}
-.in-stc-btn:last-child {
-  border-right: solid 1px #eee;
 }
 .space-btn:hover {
   border-color: #aaa;
