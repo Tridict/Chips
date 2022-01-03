@@ -11,15 +11,17 @@ const useFile = () => {
       await readFileLists(file, fileMetaList.value);
     }
   };
-  const onDropFile = (event) => {
+  const onDropFile = async (event) => {
     event.preventDefault();
 
     if (event.type == "drop") {
       const fileList = event.dataTransfer?.files;
       if (fileList) {
-        readFileLists(fileList, fileMetaList.value);
+        await readFileLists(fileList, fileMetaList.value);
+        return true;
       }
     }
+    return false;
   };
   const onRemoveFile = (idx) => {
     fileMetaList.value.splice(idx, 1);

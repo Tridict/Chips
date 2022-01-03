@@ -1,18 +1,17 @@
 <template>
   <div class="row upload-box">
     <label>
-      上传文件：
+      {{ title }}:
       <input type="file" @input="onInput" multiple />
     </label>
   </div>
-  <!-- <div>{{ fileMetaList[0]?.content }}</div> -->
-  <div class="droptarget-wrap">
+  <div class="droptarget-wrap" v-if="drop">
     <div
       id="droptarget"
       ref="dropTarget"
-      @drop="onDropFile"
-      @dragenter="onDropFile"
-      @dragover="onDropFile"
+      @drop="onDrop"
+      @dragenter="onDrop"
+      @dragover="onDrop"
     >
       把文件拖到此处
     </div>
@@ -23,6 +22,7 @@
 import useFile from "@/utils/file/useFile";
 
 export default {
+  props: ["title", "drop"],
   emits: ["onRead"],
   setup(props, ctx) {
     const { fileMetaList, onImportFiles, onDropFile } = useFile();
@@ -36,7 +36,14 @@ export default {
         // console.log(fileMetaList.value[0]?.content);
       }
     };
-    return { onDropFile, onInput };
+
+    const onDrop = async (event) => {
+      const res = await onDropFile(event);
+      if (res) {
+        ctx.emit("onRead", fileMetaList);
+      }
+    };
+    return { onDrop, onInput };
   }
 };
 </script>

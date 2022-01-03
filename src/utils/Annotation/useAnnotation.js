@@ -38,8 +38,28 @@ export const useAnnotation = () => {
     }
   };
 
+  const onReadAnnotation = (fileContents) => {
+    const content = fileContents.value[0]?.content;
+    let arr = [];
+    try {
+      arr = JSON.parse(content);
+    } catch (error) {
+      arr = content.split("\n");
+    }
+    sentenceList.value = []; // 覆盖原有内容
+    arr.forEach((x, i) => {
+      if (!x) return;
+      sentenceList.value.push({
+        id: i,
+        text: typeof x === "string" ? x : x.text,
+        annotations: x.annotations || []
+      });
+    });
+  };
+
   provide("sentenceList", readonly(sentenceList));
   provide("addAnnotation", addAnnotation);
+  provide("onReadAnnotation", onReadAnnotation);
 
-  return { sentenceList, addAnnotation };
+  return { sentenceList, addAnnotation, onReadAnnotation };
 };
