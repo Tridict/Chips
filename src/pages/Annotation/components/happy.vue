@@ -9,21 +9,6 @@
               {{ option }}
             </option>
           </select>
-          <label class="input-group-text" for="yy">Value:</label>
-          <input
-            type="text"
-            class="form-control"
-            id="yy"
-            v-model="input.value"
-          />
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            id="zz"
-            @click="onSubmit"
-          >
-            +
-          </button>
         </div>
       </div>
     </div>
