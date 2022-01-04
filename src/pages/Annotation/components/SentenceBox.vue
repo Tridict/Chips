@@ -17,9 +17,10 @@
                   <div
                     class="in-stc-btn space-btn"
                     :class="getBtnClass(0, 'space')"
+                    title="0号位置"
                     @click="handleSelect(0, 'space')"
                   >
-                    <span></span>
+                    <span class="space-btn-idx">0</span>
                   </div>
                   <template v-for="(char, i) in content.text" :key="i">
                     <div
@@ -32,39 +33,40 @@
                     <div
                       class="in-stc-btn space-btn"
                       :class="getBtnClass(i + 1, 'space')"
+                      :title="`${i+1}号位置`"
                       @click="handleSelect(i + 1, 'space')"
                     >
-                      <span></span>
+                      <span class="space-btn-idx">{{i+1}}</span>
                     </div>
                   </template>
                 </div>
               </div>
-
-              <hr class="row bg-default my-2" />
+            </div>
+            <div class="container my-2 py-2 border border-eee rounded">
               <!-- 已标注内容区域 -->
               <div
-                class="existed-annotations border border-eee rounded container"
+                class="existed-annotations"
                 v-if="content.annotations.length"
               >
+              <div class="existed-annotations__item_wrap" v-for="(item, idx) in content.annotations" :key="idx">
                 <div
-                  class="existed-annotations__item row"
-                  v-for="(item, idx) in content.annotations"
-                  :key="idx"
+                  class="existed-annotations__item"
                   @mouseover="onHoverExistedAnnotations(item.span)"
                   @mouseout="onHoverEnd"
                 >
-                  <div class="existed-annotations__item__span col-1">
-                    {{ item?.span?.[0] ?? "旁批" }}
+                  <div class="existed-annotations__item__span_left">
+                    {{ item?.span?.[0] ?? `旁批 ${item.content.key}` }}
                   </div>
-                  <div class="existed-annotations__item__label col-4">
+                  <div class="existed-annotations__item__label">
                     {{
-                      item.label || `${item.content.key}:${item.content.value}`
+                      item.label ? `${item.label}( ${content.text.slice(item?.span?.[0]??0, item?.span?.[1]??0)} )`:false || `${item.content.value}`
                     }}
                   </div>
-                  <div class="existed-annotations__item__span col-1">
+                  <div class="existed-annotations__item__span_right" v-show="item?.span?.[1]>0">
                     {{ item?.span?.[1] ?? "" }}
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -509,6 +511,11 @@ hr.bg-default {
 .sentence-btns--readonly > .space-btn {
   width: 0.1em;
 }
+
+.sentence-btns--readonly > .space-btn .space-btn-idx {
+  font-size: 0;
+  color: transparent;
+}
 .sentence-btns--readonly > .text-btn {
   width: auto;
   /* width: 1em; */
@@ -526,7 +533,7 @@ hr.bg-default {
   background: #fdf6ec;
 }
 .in-stc-btn.highlight {
-  background: #e7d47f;
+  background: #ffea2b;
 }
 .in-stc-btn:first-child {
   border-left: solid 1px #eee;
@@ -546,6 +553,12 @@ hr.bg-default {
 
 .space-btn {
   width: 0.5em;
+  overflow: hidden;
+}
+
+.space-btn .space-btn-idx {
+  font-size: 0.25em;
+  color: #aaa;
 }
 .space-btn:hover {
   border-color: #aaa;
@@ -604,20 +617,37 @@ hr.bg-default {
 }
 
 .existed-annotations {
-  padding-top: 10px;
-  margin-top: 10px;
+  margin: .1rem;
+  line-height: normal;
 }
 
 .existed-annotations__item {
-  margin-bottom: 3px;
+  display: inline-block;
+  margin: 3px;
+  border-radius: .2rem;
+  border:1px solid #eee;
+  background: #fafafa;
+  overflow: hidden;
 }
-.existed-annotations__item__label {
-  background: #b3d8ff;
+.existed-annotations__item__label, .existed-annotations__item__span_left, .existed-annotations__item__span_right {
+  display: inline-block;
+  padding: .25rem .5rem;
+  font-size: .875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  height: 100%;
+  border:1px solid #eee;
 }
-.existed-annotations__item__span {
-  background: #c2e7b0;
+.existed-annotations__item__span_left, .existed-annotations__item__span_right {
+  padding: .25rem;
+  /* background: #eee; */
+  color: #aaa;
 }
-.existed-annotations__item:hover > div {
-  background: #409eff;
+.existed-annotations__item:hover {
+  border:1px solid #aaa;
+}
+.existed-annotations__item:hover > .existed-annotations__item__span_left,
+.existed-annotations__item:hover > .existed-annotations__item__span_right {
+  color: #888;
 }
 </style>
