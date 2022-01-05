@@ -60,12 +60,12 @@ export const useSchema = () => {
         {
           _type: "IndTagAttr",
           parent: "StartPoint",
-          tagName: "StartPoint.trigger"
+          tagName: "trigger"
         },
         {
           _type: "IndTagAttr",
           parent: "StartPoint",
-          tagName: "StartPoint.concretization"
+          tagName: "concretization"
         },
         {
           _type: "IndTag",
@@ -74,12 +74,12 @@ export const useSchema = () => {
         {
           _type: "IndTagAttr",
           parent: "EndPoint",
-          tagName: "EndPoint.trigger"
+          tagName: "trigger"
         },
         {
           _type: "IndTagAttr",
           parent: "EndPoint",
-          tagName: "EndPoint.concretization"
+          tagName: "concretization"
         },
         {
           _type: "IndTag",

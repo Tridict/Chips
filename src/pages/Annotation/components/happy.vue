@@ -2,8 +2,8 @@
   <div class="card container">
     <div class="row my-1">
       <div class="col">
-        <div class="input-group" v-for="(option, idx) in options" :key="idx">
-          <label class="input-group-text" for="xx">{{ option }}:</label>
+        <div class="input-group" v-for="(attr, idx) in keys.attrs" :key="idx">
+          <label class="input-group-text" for="xx">{{ attr }}:</label>
           <select class="form-select" id="xx" v-model="input.value">
             <option v-for="(option, idx) in options" :key="idx" :value="option">
               {{ option }}
@@ -20,6 +20,10 @@ import { ref } from "vue";
 
 export default {
   props: {
+    keys: {
+      type: Object,
+      require: true
+    },
     options: {
       type: Array,
       require: true

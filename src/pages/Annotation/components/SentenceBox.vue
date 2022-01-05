@@ -158,7 +158,8 @@
                 @check="onCheckIndTag"
               />
               <Happy
-                :options="attrs"
+                :keys="attrs"
+                :options="content.annotations"
                 v-for="(attrs, idx) in ActiveAttrList"
                 :key="idx"
               />
@@ -373,12 +374,12 @@ export default {
     // “创建-绑定”: 选择indTag
     const onCheckIndTag = (idx) => {
       data.indTagList[idx].check = !data.indTagList[idx].check;
-      if (!data.indTagList[idx].check) {
+      if (data.indTagList[idx].check) {
         const selected = data.indTags.filter(
-          (x) => x.tagName === data.indTagList[idx].tagName
+          (x) => x.tagName === data.indTagList[idx].text
         );
-
-        data.ActiveAttrList.push(selected);
+        data.ActiveAttrList.push(...selected);
+        console.log(data.ActiveAttrList)
       }
     };
 

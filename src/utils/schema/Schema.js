@@ -81,8 +81,8 @@ export class Schema {
         return {
           tagName: x.tagName,
           attrs: this.content.indTagAttrs
-            .filter((x) => x.parent === x.tagName)
-            .map((x) => x.tagName)
+            .filter((y) => y.parent === x.tagName)
+            .map((y) => y.tagName)
         };
       })
     );
