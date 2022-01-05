@@ -43,7 +43,7 @@ export default {
   emits: ["submit"],
   setup(props, ctx) {
     const input = reactive({
-      key: "",
+      key: props.options[0],
       value: ""
     });
     const onSubmit = () => {
@@ -51,7 +51,7 @@ export default {
       ctx.emit("submit", input);
 
       // 重置
-      input.key = "";
+      input.key = props.options[0];
       input.value = "";
     };
     return { input, onSubmit };

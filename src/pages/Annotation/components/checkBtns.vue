@@ -16,6 +16,7 @@
           type="button"
           class="btn btn-info btn-sm m-1"
           @click="isShowInput = true"
+          v-if="showAdd"
         >
           +
         </button>
@@ -61,6 +62,10 @@ export default {
     options: {
       type: Array,
       require: true
+    },
+    showAdd: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ["check", "add"],

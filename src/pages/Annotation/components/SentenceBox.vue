@@ -33,10 +33,10 @@
                     <div
                       class="in-stc-btn space-btn"
                       :class="getBtnClass(i + 1, 'space')"
-                      :title="`${i+1}号位置`"
+                      :title="`${i + 1}号位置`"
                       @click="handleSelect(i + 1, 'space')"
                     >
-                      <span class="space-btn-idx">{{i+1}}</span>
+                      <span class="space-btn-idx">{{ i + 1 }}</span>
                     </div>
                   </template>
                 </div>
@@ -48,25 +48,37 @@
                 class="existed-annotations"
                 v-if="content.annotations.length"
               >
-              <div class="existed-annotations__item_wrap" v-for="(item, idx) in content.annotations" :key="idx">
                 <div
-                  class="existed-annotations__item"
-                  @mouseover="onHoverExistedAnnotations(item.span)"
-                  @mouseout="onHoverEnd"
+                  class="existed-annotations__item_wrap"
+                  v-for="(item, idx) in content.annotations"
+                  :key="idx"
                 >
-                  <div class="existed-annotations__item__span_left">
-                    {{ item?.span?.[0] ?? `旁批 ${item.content.key}` }}
-                  </div>
-                  <div class="existed-annotations__item__label">
-                    {{
-                      item.label ? `${item.label}( ${content.text.slice(item?.span?.[0]??0, item?.span?.[1]??0)} )`:false || `${item.content.value}`
-                    }}
-                  </div>
-                  <div class="existed-annotations__item__span_right" v-show="item?.span?.[1]>0">
-                    {{ item?.span?.[1] ?? "" }}
+                  <div
+                    class="existed-annotations__item"
+                    @mouseover="onHoverExistedAnnotations(item.span)"
+                    @mouseout="onHoverEnd"
+                  >
+                    <div class="existed-annotations__item__span_left">
+                      {{ item?.span?.[0] ?? `旁批 ${item.content.key}` }}
+                    </div>
+                    <div class="existed-annotations__item__label">
+                      {{
+                        item.label
+                          ? `${item.label}( ${content.text.slice(
+                              item?.span?.[0] ?? 0,
+                              item?.span?.[1] ?? 0
+                            )} )`
+                          : false || `${item.content.value}`
+                      }}
+                    </div>
+                    <div
+                      class="existed-annotations__item__span_right"
+                      v-show="item?.span?.[1] > 0"
+                    >
+                      {{ item?.span?.[1] ?? "" }}
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
@@ -76,38 +88,53 @@
               <!-- 按钮区域 -->
               <div class="row my-2">
                 <div class="toolbar col">
+                  <!-- 旁批 -->
                   <button
                     type="button"
                     class="btn btn-primary btn-sm"
                     :class="{ 'btn-success': isShowMetaInput }"
                     @click="onToggleMeta"
+                    v-if="!isShowIndTags && !isShowAnnotation"
                   >
                     {{ isShowMetaInput ? "结束旁批" : "新增旁批" }}
                   </button>
+                  <!-- 创建-绑定 -->
                   <button
                     type="button"
                     class="btn btn-primary btn-sm"
-                    @click="onStartOrReset"
-                    v-if="btnStates.currentOpt !== OPT_STATUS.ready"
+                    :class="{ 'btn-success': isShowIndTags }"
+                    @click="isShowIndTags = !isShowIndTags"
+                    v-if="!isShowMetaInput && !isShowAnnotation"
                   >
-                    {{ startBtnText }}
+                    {{ isShowIndTags ? "完成复合对象" : "新增复合对象" }}
                   </button>
-                  <button
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="onConfirm"
-                    v-show="isShowConfirmBtn"
-                  >
-                    确定选取 {{ selectedSpan }}
-                  </button>
-                  <button
-                    v-if="btnStates.currentOpt > OPT_STATUS.readonly"
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="onFinish"
-                  >
-                    结束标注
-                  </button>
+                  <!-- 注释模式 -->
+                  <template v-if="!isShowIndTags && !isShowMetaInput">
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      @click="onStartOrReset"
+                      v-if="btnStates.currentOpt !== OPT_STATUS.ready"
+                    >
+                      {{ startBtnText }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-success btn-sm"
+                      @click="onConfirm"
+                      v-show="isShowConfirmBtn"
+                    >
+                      确定选取 {{ selectedSpan }}
+                    </button>
+                    <button
+                      v-if="btnStates.currentOpt > OPT_STATUS.readonly"
+                      type="button"
+                      class="btn btn-success btn-sm"
+                      @click="onFinish"
+                    >
+                      结束标注
+                    </button>
+                  </template>
                 </div>
               </div>
               <!-- 按钮底部操作说明指南 -->
@@ -117,17 +144,42 @@
                 </div>
               </div>
 
-              <!-- 文本区域 -->
+              <!-- 输入区域 -->
+              <!-- 旁批模式 -->
               <InputField
                 :options="metaSlotsKeys"
                 v-show="isShowMetaInput"
                 @submit="onSubmitMeta"
               />
+              <!-- 创建-绑定模式 -->
+              <CheckBtns
+                :options="indTagList"
+                v-show="isShowIndTags"
+                @check="onCheckIndTag"
+              />
+              <Happy
+                :options="attrs"
+                v-for="(attrs, idx) in ActiveAttrList"
+                :key="idx"
+              />
+              <div class="row my-1" v-show="isShowIndTags">
+                <div class="col">
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="onSubmitAnnotation"
+                  >
+                    确定
+                  </button>
+                </div>
+              </div>
+              <!-- 注释模式 -->
               <CheckBtns
                 :options="tagList"
+                :showAdd="true"
                 v-show="+btnStates.currentOpt > OPT_STATUS.complete"
                 @check="onCheckTag"
-                @add="onAddTag"
+                @add="handleAddTag"
               />
               <div
                 class="row my-1"
@@ -152,150 +204,16 @@
 </template>
 
 <script>
-import { reactive, toRefs, computed, inject, watch } from "vue";
-import { forceBlur } from "@/utils/forceBlur.js";
+import { reactive, toRefs, inject, watch } from "vue";
+import { useSpan } from "./useSpan.js";
 import { Schema } from "@/utils/schema/Schema.js";
 import InputField from "./inputField.vue";
 import CheckBtns from "./checkBtns.vue";
-
-const OPT_STATUS = {
-  readonly: 0,
-  ready: 1,
-  selecting: 2,
-  complete: 3,
-  annotate: 4
-};
-
-const useSpan = (btnStates) => {
-  const spanStates = reactive({
-    leftId: undefined,
-    leftType: "",
-    rightId: undefined,
-    rightType: ""
-  });
-  const spanStatesBackup = reactive({
-    leftId: undefined,
-    leftType: "",
-    rightId: undefined,
-    rightType: ""
-  });
-
-  const selectedSpan = computed(() => {
-    return [
-      spanStates.leftId,
-      spanStates.rightType === "char"
-        ? spanStates.rightId + 1
-        : spanStates.rightId
-    ];
-  });
-
-  // 选取文本片段
-  const handleSelect = (id, type) => {
-    if (btnStates.currentOpt === OPT_STATUS.ready) {
-      spanStates.leftId = id;
-      spanStates.leftType = type;
-      btnStates.currentOpt += 1;
-    } else if (btnStates.currentOpt === OPT_STATUS.selecting) {
-      if (id < spanStates.leftId) {
-        spanStates.rightId = spanStates.leftId;
-        spanStates.rightType = spanStates.leftType;
-        spanStates.leftId = id;
-        spanStates.leftType = type;
-      } else {
-        spanStates.rightId = id;
-        spanStates.rightType = type;
-      }
-      btnStates.currentOpt += 1;
-    }
-
-    btnStates.histroy.push(btnStates.currentOpt);
-  };
-
-  // 重新标注：清除选择
-  const clearSelect = () => {
-    Object.assign(spanStates, {
-      leftId: undefined,
-      leftType: "",
-      rightId: undefined,
-      rightType: ""
-    });
-  };
-
-  // 控制选取后的文字样式
-  const getAnnotateBtnClass = (id, type) => {
-    if (
-      id == spanStates.rightId &&
-      type == spanStates.rightType &&
-      id == spanStates.leftId &&
-      type == spanStates.leftType
-    ) {
-      return "left-side right-side";
-    } else if (id == spanStates.leftId && type == spanStates.leftType) {
-      return "left-side";
-    } else if (
-      type == "char" &&
-      id >= spanStates.leftId &&
-      id < spanStates.rightId
-    ) {
-      return "between";
-    } else if (id == spanStates.rightId && type == spanStates.rightType) {
-      return "right-side";
-    } else if (
-      type == "space" &&
-      id > spanStates.leftId &&
-      id <= spanStates.rightId
-    ) {
-      return "between";
-    }
-  };
-
-  // 控制hover时的文字样式
-  const getHoverClass = (id, type) => {
-    if (id >= spanStatesBackup.leftId && id < spanStatesBackup.rightId) {
-      return "highlight";
-    } else if (id === spanStatesBackup.rightId && type === "space") {
-      return "highlight";
-    } else {
-      return "";
-    }
-  };
-
-  const getBtnClass = (id, type) => {
-    return getAnnotateBtnClass(id, type) + " " + getHoverClass(id, type);
-  };
-
-  // 鼠标移到已有标注上时，显示高亮
-  const onHoverExistedAnnotations = (span) => {
-    Object.assign(spanStatesBackup, {
-      leftId: span?.[0] || 0,
-      leftType: "space",
-      rightId: span?.[1] || 0,
-      rightType: "space"
-    });
-  };
-
-  const onHoverEnd = () => {
-    Object.assign(spanStatesBackup, {
-      leftId: undefined,
-      leftType: "",
-      rightId: undefined,
-      rightType: ""
-    });
-  };
-
-  return {
-    selectedSpan,
-    onHoverExistedAnnotations,
-    onHoverEnd,
-    handleSelect,
-    clearSelect,
-    getBtnClass
-  };
-};
+import Happy from "./happy.vue";
 
 export default {
   name: "SentenceBox",
-  components: { InputField, CheckBtns },
+  components: { InputField, CheckBtns, Happy },
   props: {
     title: {
       type: String,
@@ -318,21 +236,40 @@ export default {
 
     const data = reactive({
       isShowMetaInput: false,
+      isShowIndTags: false,
+      isShowAnnotation: false,
+      // isShowIndTagItem: false,
       metaSlotsKeys: schema.getMetaSlots(),
-      refTagList: schema.getRefTags(),
-      clueTagList: schema.getClueTags(),
-      tagList: []
+      refTags: schema.getRefTags(),
+      clueTags: schema.getClueTags(),
+      indTags: schema.getIndTags(),
+      tagList: [],
+      indTagList: [],
+      ActiveAttrList: [] // 在输入框展示的数据
     });
+
+    const {
+      btnStates,
+      OPT_STATUS,
+      selectedSpan,
+      annotateBtn,
+      spanData,
+      handleSelect,
+      clearSelect,
+      getBtnClass,
+      onHoverExistedAnnotations,
+      onHoverEnd
+    } = useSpan(data);
 
     const initTagList = () => {
       data.tagList = [
-        ...data.refTagList.map((x) => {
+        ...data.refTags.map((x) => {
           return {
             check: false,
             text: x
           };
         }),
-        ...data.clueTagList.map((x) => {
+        ...data.clueTags.map((x) => {
           return {
             check: false,
             text: x
@@ -350,134 +287,113 @@ export default {
         }
       };
 
-      watch(() => data.clueTagList, watchTagList);
-      watch(() => data.refTagList, watchTagList);
+      watch(() => data.clueTags, watchTagList);
+      watch(() => data.refTags, watchTagList);
+    };
+    const initIndTagList = () => {
+      data.indTagList = data.indTags.map((x) => {
+        return {
+          check: false,
+          text: x.tagName
+        };
+      });
+
+      const watchTagList = (newVal, oldVal) => {
+        if (newVal.length === oldVal.length + 1) {
+          const newItem = newVal[newVal.length - 1];
+          data.indTagList.push({
+            check: false,
+            text: newItem
+          });
+        }
+      };
+
+      watch(() => data.indTags, watchTagList);
     };
 
     initTagList();
+    initIndTagList();
 
-    const btnStates = reactive({
-      currentOpt: OPT_STATUS.readonly,
-      histroy: []
-    });
+    // 旁批 事件处理函数
+    const metaHandlers = {
+      // 点击“新增旁批”按钮
+      onToggleMeta: () => {
+        data.isShowMetaInput = !data.isShowMetaInput;
+      },
 
-    const {
-      selectedSpan,
-      handleSelect,
-      clearSelect,
-      getBtnClass,
-      onHoverExistedAnnotations,
-      onHoverEnd
-    } = useSpan(btnStates);
-
-    // 点击“新增旁批”按钮
-    const onToggleMeta = () => {
-      data.isShowMetaInput = !data.isShowMetaInput;
-    };
-
-    // 点击“新增span/重新选取”按钮
-    const onStartOrReset = (event) => {
-      if (btnStates.currentOpt > OPT_STATUS.ready) {
-        clearSelect(); // 重新标注
-      } else {
-        // 开始标注
-      }
-      btnStates.currentOpt = OPT_STATUS.ready;
-      forceBlur(event);
-    };
-    // 点击“确定选取“按钮
-    const onConfirm = (event) => {
-      btnStates.currentOpt += 1;
-      forceBlur(event);
-    };
-    const onCheckTag = (idx) => {
-      data.tagList[idx].check = !data.tagList[idx].check;
-    };
-    const onAddTag = (type, tagName) => {
-      if (type === "ref") {
-        schema.addRefTag(tagName);
-      } else {
-        schema.addClueTag(tagName);
+      // 点击加号
+      onSubmitMeta: (input) => {
+        addAnnotation({
+          id: props.content.id,
+          annotation: {
+            content: { key: input.key, value: input.value },
+            type: "meta"
+          }
+        });
       }
     };
-    // 点击tagList下方的“确定”按钮
-    const onSubmitAnnotation = () => {
-      // 提交当前数据
-      data.tagList.forEach((x) => {
-        if (x.check) {
-          addAnnotation({
-            id: props.content.id,
-            annotation: {
-              label: x.text,
-              span: selectedSpan.value,
-              type: "annotation"
-            }
-          });
-          x.check = false;
+
+    const annotateHandlers = {
+      // “注释”: 选择Tag
+      onCheckTag: (idx) => {
+        data.tagList[idx].check = !data.tagList[idx].check;
+      },
+
+      // “注释”: 新增Tag
+      handleAddTag: (type, tagName) => {
+        if (type === "ref") {
+          schema.addRefTag(tagName);
+        } else {
+          schema.addClueTag(tagName);
         }
-      });
-      // 改变UI：可以开始下一段标注。
-      clearSelect();
-      btnStates.currentOpt = OPT_STATUS.ready;
-    };
-    // 点击key value输入框后面的加号
-    const onSubmitMeta = (input) => {
-      addAnnotation({
-        id: props.content.id,
-        annotation: {
-          content: { key: input.key, value: input.value },
-          type: "meta"
-        }
-      });
-    };
-    // 点击"结束标注"按钮
-    const onFinish = () => {
-      btnStates.currentOpt = OPT_STATUS.readonly;
-      clearSelect();
+      },
+
+      // “注释”: 点击“确定”按钮
+      onSubmitAnnotation: () => {
+        // 提交当前数据
+        data.tagList.forEach((x) => {
+          if (x.check) {
+            addAnnotation({
+              id: props.content.id,
+              annotation: {
+                label: x.text,
+                span: selectedSpan.value,
+                type: "annotation"
+              }
+            });
+            x.check = false;
+          }
+        });
+        // 改变UI：可以开始下一段标注。
+        clearSelect();
+        btnStates.currentOpt = OPT_STATUS.ready;
+      }
     };
 
-    const isReadonly = computed(() => {
-      return btnStates.currentOpt === OPT_STATUS.readonly;
-    });
-    const isShowConfirmBtn = computed(() => {
-      return btnStates.currentOpt === OPT_STATUS.complete;
-    });
-    const startBtnText = computed(() => {
-      return btnStates.currentOpt > OPT_STATUS.ready
-        ? "重新选取"
-        : btnStates.currentOpt == OPT_STATUS.ready
-        ? "请选取"
-        : "新增span";
-    });
-    const toolInfo = computed(() => {
-      const infos = [
-        undefined,
-        "请选取要标注的文本片段的开始位置",
-        "请选取要标注的文本片段的结束位置",
-        "请确定",
-        "请开始标注或加入span列表"
-      ];
-      return infos[+btnStates.currentOpt];
-    });
+    // “创建-绑定”: 选择indTag
+    const onCheckIndTag = (idx) => {
+      data.indTagList[idx].check = !data.indTagList[idx].check;
+      if (!data.indTagList[idx].check) {
+        const selected = data.indTags.filter(
+          (x) => x.tagName === data.indTagList[idx].tagName
+        );
+
+        data.ActiveAttrList.push(selected);
+      }
+    };
+
     return {
       ...toRefs(data),
+      ...toRefs(spanData),
+      ...annotateBtn,
+      ...metaHandlers,
+      ...annotateHandlers,
+      onCheckIndTag,
       OPT_STATUS,
       btnStates,
       selectedSpan,
-      isReadonly,
-      isShowConfirmBtn,
-      startBtnText,
-      toolInfo,
       handleSelect,
       getBtnClass,
-      onToggleMeta,
-      onStartOrReset,
-      onConfirm,
-      onCheckTag,
-      onAddTag,
-      onSubmitAnnotation,
-      onSubmitMeta,
-      onFinish,
       onHoverExistedAnnotations,
       onHoverEnd
     };
@@ -617,34 +533,37 @@ hr.bg-default {
 }
 
 .existed-annotations {
-  margin: .1rem;
+  margin: 0.1rem;
   line-height: normal;
 }
 
 .existed-annotations__item {
   display: inline-block;
   margin: 3px;
-  border-radius: .2rem;
-  border:1px solid #eee;
+  border-radius: 0.2rem;
+  border: 1px solid #eee;
   background: #fafafa;
   overflow: hidden;
 }
-.existed-annotations__item__label, .existed-annotations__item__span_left, .existed-annotations__item__span_right {
+.existed-annotations__item__label,
+.existed-annotations__item__span_left,
+.existed-annotations__item__span_right {
   display: inline-block;
-  padding: .25rem .5rem;
-  font-size: .875rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
   height: 100%;
-  border:1px solid #eee;
+  border: 1px solid #eee;
 }
-.existed-annotations__item__span_left, .existed-annotations__item__span_right {
-  padding: .25rem;
+.existed-annotations__item__span_left,
+.existed-annotations__item__span_right {
+  padding: 0.25rem;
   /* background: #eee; */
   color: #aaa;
 }
 .existed-annotations__item:hover {
-  border:1px solid #aaa;
+  border: 1px solid #aaa;
 }
 .existed-annotations__item:hover > .existed-annotations__item__span_left,
 .existed-annotations__item:hover > .existed-annotations__item__span_right {

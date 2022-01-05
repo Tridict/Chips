@@ -2,9 +2,9 @@
   <div class="card container">
     <div class="row my-1">
       <div class="col">
-        <div class="input-group">
-          <label class="input-group-text" for="xx">Key:</label>
-          <select class="form-select" id="xx" v-model="input.key">
+        <div class="input-group" v-for="(option, idx) in options" :key="idx">
+          <label class="input-group-text" for="xx">{{ option }}:</label>
+          <select class="form-select" id="xx" v-model="input.value">
             <option v-for="(option, idx) in options" :key="idx" :value="option">
               {{ option }}
             </option>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { ref } from "vue";
 
 export default {
   props: {
@@ -26,20 +26,9 @@ export default {
     }
   },
   emits: ["submit"],
-  setup(props, ctx) {
-    const input = reactive({
-      key: "",
-      value: ""
-    });
-    const onSubmit = () => {
-      // 提交
-      ctx.emit("submit", input);
-
-      // 重置
-      input.key = "";
-      input.value = "";
-    };
-    return { input, onSubmit };
+  setup(props) {
+    const input = ref(props.options[0]);
+    return { input };
   }
 };
 </script>
