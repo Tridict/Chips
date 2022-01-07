@@ -48,7 +48,6 @@ export const useAnnotation = () => {
     }
     sentenceList.value = []; // 覆盖原有内容
     arr.forEach((x, i) => {
-      if (!x) return;
       sentenceList.value.push({
         id: i,
         text: typeof x === "string" ? x : x.text,

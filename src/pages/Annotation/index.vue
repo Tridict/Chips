@@ -10,6 +10,7 @@
     :key="sentence.id"
     :title="sentence.text"
     :content="sentence"
+    v-show="sentence.text"
   />
 </template>
 
