@@ -42,12 +42,12 @@
                 </div>
               </div>
             </div>
-            <div class="container my-2 py-2 border border-eee rounded">
+            <div
+              class="container my-2 py-2 border border-eee rounded"
+              v-if="content.annotations.length"
+            >
               <!-- 已标注内容区域 -->
-              <div
-                class="existed-annotations"
-                v-if="content.annotations.length"
-              >
+              <div class="existed-annotations">
                 <div
                   class="existed-annotations__item_wrap"
                   v-for="(item, idx) in content.annotations"
@@ -59,7 +59,7 @@
                     @mouseout="onHoverEnd"
                   >
                     <div class="existed-annotations__item__span_left">
-                      {{ item?.span?.[0] ?? `旁批 ${item.content.key}` }}
+                      {{ item?.span?.[0] ?? (item?.content?.key ? `旁批 ${item.content?.key}` : '创建-绑定') }}
                     </div>
                     <div class="existed-annotations__item__label">
                       {{
@@ -68,7 +68,7 @@
                               item?.span?.[0] ?? 0,
                               item?.span?.[1] ?? 0
                             )} )`
-                          : false || `${item.content.value}`
+                          : false || `${item?.content?.value}`
                       }}
                     </div>
                     <div
@@ -152,28 +152,14 @@
                 @submit="onSubmitMeta"
               />
               <!-- 创建-绑定模式 -->
-              <CheckBtns
-                :options="indTagList"
-                v-show="isShowIndTags"
-                @check="onCheckIndTag"
-              />
-              <Happy
-                :keys="attrs"
-                :options="content.annotations"
-                v-for="(attrs, idx) in ActiveAttrList"
-                :key="idx"
-              />
-              <div class="row my-1" v-show="isShowIndTags">
-                <div class="col">
-                  <button
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="onSubmitAnnotation"
-                  >
-                    确定
-                  </button>
-                </div>
-              </div>
+              <template v-if="isShowIndTags">
+                <CreateBindMode
+                  :schema="schema"
+                  :annotations="content.annotations"
+                  :sentenceId="content.id"
+                  @submit="onSubmitIndTags"
+                />
+              </template>
               <!-- 注释模式 -->
               <CheckBtns
                 :options="tagList"
@@ -210,11 +196,11 @@ import { useSpan } from "./useSpan.js";
 import { Schema } from "@/utils/schema/Schema.js";
 import InputField from "./inputField.vue";
 import CheckBtns from "./checkBtns.vue";
-import Happy from "./happy.vue";
+import CreateBindMode from "./CreateBindMode/index.vue";
 
 export default {
   name: "SentenceBox",
-  components: { InputField, CheckBtns, Happy },
+  components: { InputField, CheckBtns, CreateBindMode },
   props: {
     title: {
       type: String,
@@ -244,9 +230,7 @@ export default {
       refTags: schema.getRefTags(),
       clueTags: schema.getClueTags(),
       indTags: schema.getIndTags(),
-      tagList: [],
-      indTagList: [],
-      ActiveAttrList: [] // 在输入框展示的数据
+      tagList: []
     });
 
     const {
@@ -291,29 +275,8 @@ export default {
       watch(() => data.clueTags, watchTagList);
       watch(() => data.refTags, watchTagList);
     };
-    const initIndTagList = () => {
-      data.indTagList = data.indTags.map((x) => {
-        return {
-          check: false,
-          text: x.tagName
-        };
-      });
-
-      const watchTagList = (newVal, oldVal) => {
-        if (newVal.length === oldVal.length + 1) {
-          const newItem = newVal[newVal.length - 1];
-          data.indTagList.push({
-            check: false,
-            text: newItem
-          });
-        }
-      };
-
-      watch(() => data.indTags, watchTagList);
-    };
 
     initTagList();
-    initIndTagList();
 
     // 旁批 事件处理函数
     const metaHandlers = {
@@ -371,25 +334,13 @@ export default {
       }
     };
 
-    // “创建-绑定”: 选择indTag
-    const onCheckIndTag = (idx) => {
-      data.indTagList[idx].check = !data.indTagList[idx].check;
-      if (data.indTagList[idx].check) {
-        const selected = data.indTags.filter(
-          (x) => x.tagName === data.indTagList[idx].text
-        );
-        data.ActiveAttrList.push(...selected);
-        console.log(data.ActiveAttrList)
-      }
-    };
-
     return {
+      schema,
       ...toRefs(data),
       ...toRefs(spanData),
       ...annotateBtn,
       ...metaHandlers,
       ...annotateHandlers,
-      onCheckIndTag,
       OPT_STATUS,
       btnStates,
       selectedSpan,
