@@ -1,5 +1,5 @@
 <template>
-  <div class="input-group" >
+  <div class="input-group">
     <label class="input-group-text" for="xx">{{ keys }}:</label>
     <select class="form-select" id="xx" v-model="input">
       <option v-for="(option, idx) in options" :key="idx" :value="option">
@@ -25,11 +25,20 @@ export default {
     },
     id: {
       type: Number
+    },
+    selected: {
+      type: String
     }
   },
   emits: ["select"],
   setup(props, ctx) {
-    const input = ref('');
+    const input = ref("");
+    watch(
+      () => props.selected,
+      (newVal) => {
+        input.value = newVal;
+      }
+    );
     watch(input, () => {
       ctx.emit("select", input.value, props.id);
     });

@@ -1,5 +1,10 @@
 <template>
-  <Select keys="" :options="indTagList" @select="onSelectTag" />
+  <Select
+    keys=""
+    :options="indTagList"
+    :selected="selectedTag"
+    @select="onSelectTag"
+  />
   <Happy
     v-if="ActiveAttrList[0]?.attrs?.length"
     :keys="ActiveAttrList[0]?.attrs"
@@ -30,7 +35,8 @@ export default {
     const data = reactive({
       indTags: props.schema?.getIndTags() || [],
       indTagList: [],
-      ActiveAttrList: [] // 在输入框展示的数据
+      ActiveAttrList: [], // 在输入框展示的数据
+      selectedTag: ""
     });
 
     const initIndTagList = () => {
@@ -64,10 +70,12 @@ export default {
               attrs: x.annotation
             }
           });
+          x.annotation = []
         });
 
         // 清空
-        data.ActiveAttrList = [];
+        // data.ActiveAttrList = [];
+        data.selectedTag = "";
       },
 
       // 选择indTag
@@ -75,6 +83,7 @@ export default {
         data.ActiveAttrList = data.indTags.filter(
           (x) => x.tagName === selectedText
         );
+        data.selectedTag = selectedText;
       },
 
       onSelectAttr: (selectedText) => {
