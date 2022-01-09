@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { inject, watch } from "vue";
+import { inject } from "vue";
 import UploadBox from "../../components/uploadBox.vue";
 import DownloadBtn from "../../components/downloadBtn.vue";
 import { useJsonEditor } from "@/utils/jsonEditor";
@@ -44,7 +44,9 @@ export default {
     const schema = inject("schema");
     const updateSchema = inject("updateSchema");
     // const textarea = ref(schema.value);
-    const { jecontainer, getJeVal, setJeVal } = useJsonEditor(schema.value);
+    const { jecontainer, getJeVal, setJeVal } = useJsonEditor(schema, {
+      modes: ["form", "code", "tree", "view"]
+    });
 
     const onImport = (fileContents) => {
       const content = fileContents.value[0]?.content;
@@ -60,11 +62,6 @@ export default {
       updateSchema(getJeVal());
     };
 
-    watch(schema, () => {
-      // textarea.value = schema.value;
-      setJeVal(schema.value);
-    });
-
     return { schema, jecontainer, onReset, onUpdate, onImport };
   }
 };
@@ -73,5 +70,12 @@ export default {
 <style>
 .json-editor {
   height: 90vh;
+}
+.jsoneditor {
+  border-color: #78acd9;
+}
+.jsoneditor-menu {
+  background-color: #78acd9;
+  border-color: #577bb5;
 }
 </style>

@@ -42,11 +42,11 @@
                 </div>
               </div>
             </div>
+            <!-- 已标注内容区域 -->
             <div
               class="container my-2 py-2 border border-eee rounded"
-              v-if="content.annotations.length"
+              v-show="content.annotations.length"
             >
-              <!-- 已标注内容区域 -->
               <div class="existed-annotations">
                 <div
                   class="existed-annotations__item_wrap"
@@ -59,7 +59,12 @@
                     @mouseout="onHoverEnd"
                   >
                     <div class="existed-annotations__item__span_left">
-                      {{ item?.span?.[0] ?? (item?.content?.key ? `旁批 ${item.content?.key}` : '创建-绑定') }}
+                      {{
+                        item?.span?.[0] ??
+                        (item?.content?.key
+                          ? `旁批 ${item.content?.key}`
+                          : "创建-绑定")
+                      }}
                     </div>
                     <div class="existed-annotations__item__label">
                       {{
@@ -79,6 +84,7 @@
                     </div>
                   </div>
                 </div>
+                <div class="je-container" ref="jecontainer"></div>
               </div>
             </div>
           </div>
@@ -191,9 +197,11 @@
 </template>
 
 <script>
-import { reactive, toRefs, inject, watch } from "vue";
+import { reactive, toRefs, inject, watch, computed } from "vue";
 import { useSpan } from "./useSpan.js";
+import { useJsonEditor } from "@/utils/jsonEditor";
 import { Schema } from "@/utils/schema/Schema.js";
+
 import InputField from "./inputField.vue";
 import CheckBtns from "./checkBtns.vue";
 import CreateBindMode from "./CreateBindMode/index.vue";
@@ -245,6 +253,10 @@ export default {
       onHoverExistedAnnotations,
       onHoverEnd
     } = useSpan(data);
+
+    const { jecontainer } = useJsonEditor(computed(() => props.content.annotations), {
+      mode: "view"
+    });
 
     const initTagList = () => {
       data.tagList = [
@@ -341,6 +353,7 @@ export default {
       ...annotateBtn,
       ...metaHandlers,
       ...annotateHandlers,
+      jecontainer,
       OPT_STATUS,
       btnStates,
       selectedSpan,

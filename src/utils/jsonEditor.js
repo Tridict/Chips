@@ -1,13 +1,18 @@
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import JSONEditor from "jsoneditor";
 import "jsoneditor/dist/jsoneditor.min.css";
 
-export const useJsonEditor = (initVal) => {
+export const useJsonEditor = (initVal, options) => {
   const jsonEditor = ref(null);
   const jecontainer = ref(null);
 
   const setJeVal = (val) => {
-    jsonEditor.value.set(JSON.parse(val));
+    if (typeof val === "string") {
+      jsonEditor.value.set(JSON.parse(val));
+    } else {
+      jsonEditor.value.set(val);
+    }
+    jsonEditor.value.expandAll();
   };
 
   const getJeVal = () => {
@@ -15,19 +20,23 @@ export const useJsonEditor = (initVal) => {
     console.log(aa);
     return JSON.stringify(aa);
   };
+  
+  watchEffect(() => {
+    if (initVal.value && jsonEditor.value) {
+      setJeVal(initVal.value);
+    }
+  });
 
   onMounted(() => {
-    const options = {
-      modes: ["form", "code", "tree", "view"],
+    jsonEditor.value = new JSONEditor(jecontainer.value, {
+      ...options,
       onModeChange(newMode) {
         if (newMode !== "code") {
           jsonEditor.value?.expandAll();
         }
       }
-    };
-    jsonEditor.value = new JSONEditor(jecontainer.value, options);
-    setJeVal(initVal);
-    jsonEditor.value.expandAll();
+    });
+    setJeVal(initVal.value);
   });
 
   return { jecontainer, getJeVal, setJeVal };
