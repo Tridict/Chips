@@ -68,8 +68,8 @@
                     </div>
                     <div class="existed-annotations__item__label">
                       {{
-                        item.label
-                          ? `${item.label}( ${content.text.slice(
+                        item._tag
+                          ? `${item._tag}( ${content.text.slice(
                               item?.span?.[0] ?? 0,
                               item?.span?.[1] ?? 0
                             )} )`
@@ -255,7 +255,7 @@ export default {
     } = useSpan(data);
 
     const { jecontainer } = useJsonEditor(computed(() => props.content.annotations), {
-      mode: "view"
+      modes: ["view", "code"]
     });
 
     const initTagList = () => {
@@ -303,7 +303,7 @@ export default {
           id: props.content.id,
           annotation: {
             content: { key: input.key, value: input.value },
-            type: "meta"
+            _tagMode: "meta",
           }
         });
       }
@@ -332,9 +332,9 @@ export default {
             addAnnotation({
               id: props.content.id,
               annotation: {
-                label: x.text,
+                _tag: x.text,
                 span: selectedSpan.value,
-                type: "annotation"
+                _tagMode: "annotation"
               }
             });
             x.check = false;

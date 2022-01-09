@@ -8,16 +8,27 @@ export const useAnnotation = () => {
       text: "这是第一句的内容，算是body部分。一个字符串...",
       annotations: [
         {
-          label: "111",
-          span: [2, 5],
-          type: "annotation"
+          content: {
+            key: "todo",
+            value: "111"
+          },
+          _tagMode: "meta",
+          _id: 0
         },
         {
           content: {
             key: "todo",
-            value: "6789"
+            value: "222"
           },
-          type: "meta"
+          _tagMode: "meta",
+          _id: 1
+        },
+        {
+          _tagMode: "CC",
+          _tag: "StartPoint",
+          trigger: "#1",
+          concretization: "#0",
+          _id: 2
         }
       ]
     },
@@ -30,7 +41,10 @@ export const useAnnotation = () => {
 
   const addAnnotation = (pars) => {
     if (sentenceList.value[pars.id]?.annotations) {
-      sentenceList.value[pars.id].annotations.push(pars.annotation);
+      sentenceList.value[pars.id].annotations.push({
+        ...pars.annotation,
+        _id: sentenceList.value[pars.id].annotations.length
+      });
       console.log(sentenceList.value);
     } else {
       console.log("没有找到对应的句子");

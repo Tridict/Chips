@@ -62,15 +62,19 @@ export default {
         // 提交当前数据
         data.indTags.forEach((x) => {
           if (!x.annotation?.length) return;
+          const annotations = {};
+          x.annotation.forEach((y) => {
+            annotations[y.key] = '#' + y.value._id
+          });
           addAnnotation({
             id: props.sentenceId,
             annotation: {
-              label: x.tagName,
-              type: "combine",
-              attrs: x.annotation
+              _tagMode: "CC",
+              _tag: x.tagName,
+              ...annotations
             }
           });
-          x.annotation = []
+          x.annotation = [];
         });
 
         // 清空
