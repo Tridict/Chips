@@ -1,9 +1,9 @@
 <template>
   <div class="input-group">
-    <label class="input-group-text" for="xx" v-if="keys">{{ keys }}:</label>
+    <label class="input-group-text" for="xx">{{ keys }}:</label>
     <select class="form-select" id="xx" v-model="input">
-      <option v-for="(option, idx) in options" :key="idx" :value="option">
-        {{ option }}
+      <option v-for="(option, idx) in options" :key="idx" :value="option._id">
+        {{ option.face }}
       </option>
     </select>
   </div>

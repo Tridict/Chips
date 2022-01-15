@@ -45,61 +45,7 @@
                 </div>
               </div>
             </div>
-            <!-- 已标注内容区域 -->
-            <div
-              class="container my-2 py-2 border border-eee rounded"
-              v-show="content.annotations.length"
-            >
-              <div class="existed-annotations">
-                <div
-                  class="existed-annotations__item_wrap"
-                  v-for="(item, idx) in content.annotations"
-                  :key="idx"
-                >
-                  <div
-                    class="existed-annotations__item"
-                    @mouseover="onHoverExistedAnnotations(item.span)"
-                    @mouseout="onHoverEnd"
-                  >
-                    <div class="existed-annotations__item__span_left">
-                      {{
-                        item?.span?.[0] ??
-                        (item?.content?.key
-                          ? `旁批 ${item.content?.key}`
-                          : "创建-绑定")
-                      }}
-                    </div>
-                    <div class="existed-annotations__item__label">
-                      {{
-                        item._tag
-                          ? `${item._tag}( ${content.text.slice(
-                              item?.span?.[0] ?? 0,
-                              item?.span?.[1] ?? 0
-                            )} )`
-                          : false || `${item?.content?.value}`
-                      }}
-                    </div>
-                    <div
-                      class="existed-annotations__item__span_right"
-                      v-show="item?.span?.[1] > 0"
-                    >
-                      {{ item?.span?.[1] ?? "" }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- 右边区域 -->
-          <div class="annotate-area col-12 col-xl-6">
-            <div class="container my-2 py-2 border border-eee rounded">
-              <div class="row my-2">
-                <div class="col">
-                  <div class="je-container" ref="jecontainer"></div>
-                </div>
-              </div>
-            </div>
-              <!-- 按钮区域 -->
+            <!-- 按钮区域 -->
             <div class="container my-2 py-2 border border-eee rounded">
               <div class="row my-2">
                 <div class="toolbar col">
@@ -172,7 +118,8 @@
                   :schema="schema"
                   :annotations="content.annotations"
                   :sentenceId="content.id"
-                  @submit="onSubmitIndTags"
+                  :text="content.text"
+                  @finish="isShowIndTags = false"
                 />
               </template>
               <!-- 注释模式 -->
@@ -195,6 +142,60 @@
                   >
                     确定
                   </button>
+                </div>
+              </div>
+            </div>
+            <!-- 已标注内容区域 -->
+            <div
+              class="container my-2 py-2 border border-eee rounded"
+              v-show="content.annotations.length"
+            >
+              <div class="existed-annotations">
+                <div
+                  class="existed-annotations__item_wrap"
+                  v-for="(item, idx) in content.annotations"
+                  :key="idx"
+                >
+                  <div
+                    class="existed-annotations__item"
+                    @mouseover="onHoverExistedAnnotations(item.span)"
+                    @mouseout="onHoverEnd"
+                  >
+                    <div class="existed-annotations__item__span_left">
+                      {{
+                        item?.span?.[0] ??
+                        (item?.content?.key
+                          ? `旁批 ${item.content?.key}`
+                          : "创建-绑定")
+                      }}
+                    </div>
+                    <div class="existed-annotations__item__label">
+                      {{
+                        item._tag
+                          ? `${item._tag}( ${content.text.slice(
+                              item?.span?.[0] ?? 0,
+                              item?.span?.[1] ?? 0
+                            )} )`
+                          : false || `${item?.content?.value}`
+                      }}
+                    </div>
+                    <div
+                      class="existed-annotations__item__span_right"
+                      v-show="item?.span?.[1] > 0"
+                    >
+                      {{ item?.span?.[1] ?? "" }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 右边区域 -->
+          <div class="annotate-area col-12 col-xl-6">
+            <div class="container my-2 py-2 border border-eee rounded">
+              <div class="row my-2">
+                <div class="col">
+                  <div class="je-container" ref="jecontainer"></div>
                 </div>
               </div>
             </div>

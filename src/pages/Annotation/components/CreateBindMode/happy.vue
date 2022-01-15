@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import Select from "@/components/Select.vue";
+import Select from "./Select.vue";
 
 export default {
   components: { Select },
@@ -37,8 +37,8 @@ export default {
         key
       };
     });
-    const onSelect = (pars, idx) => {
-      annotations[idx].value = pars;
+    const onSelect = (id, idx) => {
+      annotations[idx].value = `#${id}`;
       ctx.emit("select", annotations);
     };
     return { onSelect };
