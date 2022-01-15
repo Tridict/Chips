@@ -12,7 +12,7 @@ export const useJsonEditor = (initVal, options) => {
     } else {
       jsonEditor.value.set(val);
     }
-    jsonEditor.value.expandAll();
+    jsonEditor.value?.expandAll?.();
   };
 
   const getJeVal = () => {
@@ -32,7 +32,7 @@ export const useJsonEditor = (initVal, options) => {
       ...options,
       onModeChange(newMode) {
         if (newMode !== "code") {
-          jsonEditor.value?.expandAll();
+          jsonEditor.value?.expandAll?.();
         }
       }
     });
