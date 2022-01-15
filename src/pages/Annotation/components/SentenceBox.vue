@@ -254,9 +254,12 @@ export default {
       onHoverEnd
     } = useSpan(data);
 
-    const { jecontainer } = useJsonEditor(computed(() => props.content.annotations), {
-      modes: ["view", "code"]
-    });
+    const { jecontainer } = useJsonEditor(
+      computed(() => props.content.annotations),
+      {
+        modes: ["view", "code"]
+      }
+    );
 
     const initTagList = () => {
       data.tagList = [
@@ -303,7 +306,7 @@ export default {
           id: props.content.id,
           annotation: {
             content: { key: input.key, value: input.value },
-            _tagMode: "meta",
+            _tagMode: "meta"
           }
         });
       }

@@ -1,19 +1,18 @@
 <template>
-  <div class="row upload-box">
-    <label>
-      {{ title }}:
-      <input type="file" @input="onInput" multiple />
-    </label>
-  </div>
-  <div class="droptarget-wrap" v-if="drop">
-    <div
-      id="droptarget"
-      ref="dropTarget"
-      @drop="onDrop"
-      @dragenter="onDrop"
-      @dragover="onDrop"
-    >
-      把文件拖到此处
+  <div>
+    <div class="mb-2">
+      <label class="form-label">{{ title }}</label>
+      <input class="form-control" type="file" @input="onInput" multiple />
+    </div>
+    <div class="card text-center p-5" v-if="drop">
+      <div
+        ref="dropTarget"
+        @drop="onDrop"
+        @dragenter="onDrop"
+        @dragover="onDrop"
+      >
+        把文件拖到此处
+      </div>
     </div>
   </div>
 </template>
@@ -55,12 +54,12 @@ export default {
   width: var(--td-main-width);
   margin-top: var(--td-btn-padding-top);
 }
-#droptarget {
+/* #droptarget {
   height: 80%;
   width: 100%;
   background: var(--td-gray-bg);
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
 </style>

@@ -64,7 +64,7 @@ export default {
           if (!x.annotation?.length) return;
           const annotations = {};
           x.annotation.forEach((y) => {
-            annotations[y.key] = '#' + y.value._id
+            annotations[y.key] = "#" + y.value._id;
           });
           addAnnotation({
             id: props.sentenceId,

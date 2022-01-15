@@ -1,11 +1,17 @@
 <template>
   <!-- 导出 -->
-  <a class="export-wrap" :download="filename" :href="getDownloadLink(content)">
-    <button>{{ btnText }}</button>
-  </a>
+  <button
+    type="button"
+    class="btn btn-primary btn-sm"
+    @click="download(content, filename)"
+  >
+    {{ btnText }}
+  </button>
 </template>
 
 <script>
+import { saveAs } from "file-saver";
+
 export default {
   props: {
     // 保存的文件名
@@ -24,14 +30,22 @@ export default {
     }
   },
   setup() {
+    const download = (txt, filename) => {
+      let blob = new Blob([txt], {
+        type: "text/plain;charset=utf-8"
+      });
+      saveAs(blob, filename);
+    };
     const getDownloadLink = (txt) => {
       if (typeof txt === "string") {
         return "data:text/paint; utf-8," + encodeURIComponent(txt);
       } else {
-        return "data:text/paint; utf-8," + encodeURIComponent(JSON.stringify(txt));
+        return (
+          "data:text/paint; utf-8," + encodeURIComponent(JSON.stringify(txt))
+        );
       }
     };
-    return { getDownloadLink };
+    return { download, getDownloadLink };
   }
 };
 </script>

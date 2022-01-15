@@ -1,6 +1,22 @@
 <template>
-  <UploadBox title="导入schema" @onRead="onImport" />
-  <DownloadBtn filename="schema.json" :content="schema" btnText="导出schema" />
+  <div class="card my-3">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col">
+          <UploadBox title="导入schema" @onRead="onImport" />
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col">
+          <DownloadBtn
+            filename="schema.json"
+            :content="JSON.stringify(JSON.parse(schema), null, 2)"
+            btnText="导出schema"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- 文本区域 -->
   <div class="edit-area col-12">
     <div class="container my-2 py-2 border border-eee rounded">

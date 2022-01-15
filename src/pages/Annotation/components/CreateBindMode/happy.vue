@@ -3,7 +3,8 @@
     <div class="row my-1">
       <div class="col">
         <Select
-          v-for="(key, idx) in keys" :key="idx"
+          v-for="(key, idx) in keys"
+          :key="idx"
           :keys="key"
           :options="options"
           :id="idx"
@@ -31,14 +32,14 @@ export default {
   },
   emits: ["select"],
   setup(props, ctx) {
-    const annotations = props.keys.map(key => {
+    const annotations = props.keys.map((key) => {
       return {
-        key,
-      }
-    })
+        key
+      };
+    });
     const onSelect = (pars, idx) => {
       annotations[idx].value = pars;
-      ctx.emit('select', annotations);
+      ctx.emit("select", annotations);
     };
     return { onSelect };
   }
