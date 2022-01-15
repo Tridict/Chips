@@ -13,30 +13,33 @@
                 <div
                   class="sentence-btns"
                   :class="{ 'sentence-btns--readonly': isReadonly }"
+                  @mousedown="dragDown"
+                  @mousemove="dragMove"
+                  @mouseup="dragUp"
                 >
                   <div
                     class="in-stc-btn space-btn"
                     :class="getBtnClass(0, 'space')"
+                    name="0,space"
                     title="0号位置"
-                    @click="handleSelect(0, 'space')"
                   >
-                    <span class="space-btn-idx">0</span>
+                    <span class="space-btn-idx" name="0,space">0</span>
                   </div>
                   <template v-for="(char, i) in content.text" :key="i">
                     <div
                       class="in-stc-btn text-btn"
+                      :name="i+',char'"
                       :class="getBtnClass(i, 'char')"
-                      @click="handleSelect(i, 'char')"
                     >
-                      <span>{{ char }}</span>
+                      <span :name="i+',char'">{{ char }}</span>
                     </div>
                     <div
                       class="in-stc-btn space-btn"
                       :class="getBtnClass(i + 1, 'space')"
+                      :name="(i+1)+',space'"
                       :title="`${i + 1}号位置`"
-                      @click="handleSelect(i + 1, 'space')"
                     >
-                      <span class="space-btn-idx">{{ i + 1 }}</span>
+                      <span class="space-btn-idx" :name="(i+1)+',space'">{{ i + 1 }}</span>
                     </div>
                   </template>
                 </div>
@@ -206,6 +209,7 @@
 import { reactive, toRefs, inject, watch, computed } from "vue";
 import { useSpan } from "./useSpan.js";
 import { useJsonEditor } from "@/utils/jsonEditor";
+import { useDrag } from "@/utils/useDrag";
 import { Schema } from "@/utils/schema/Schema.js";
 
 import InputField from "./inputField.vue";
@@ -362,11 +366,12 @@ export default {
       ...annotateBtn,
       ...metaHandlers,
       ...annotateHandlers,
+      ...useDrag(handleSelect),
       jecontainer,
       OPT_STATUS,
       btnStates,
       selectedSpan,
-      handleSelect,
+      // handleSelect,
       getBtnClass,
       onHoverExistedAnnotations,
       onHoverEnd
@@ -397,6 +402,7 @@ hr.bg-default {
   display: flex;
   flex-wrap: wrap;
   font-size: 1.25em;
+  user-select: none;
 }
 
 .sentence-btns--readonly > * {
