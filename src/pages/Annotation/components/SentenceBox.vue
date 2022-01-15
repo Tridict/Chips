@@ -84,14 +84,20 @@
                     </div>
                   </div>
                 </div>
-                <div class="je-container" ref="jecontainer"></div>
               </div>
             </div>
           </div>
           <!-- 右边区域 -->
           <div class="annotate-area col-12 col-xl-6">
             <div class="container my-2 py-2 border border-eee rounded">
+              <div class="row my-2">
+                <div class="col">
+                  <div class="je-container" ref="jecontainer"></div>
+                </div>
+              </div>
+            </div>
               <!-- 按钮区域 -->
+            <div class="container my-2 py-2 border border-eee rounded">
               <div class="row my-2">
                 <div class="toolbar col">
                   <!-- 旁批 -->
@@ -370,6 +376,12 @@ export default {
 </script>
 
 <style scoped>
+
+.annotate-area .je-container {
+  height: 16rem;
+}
+
+
 .bg-default {
   background-color: #dee2e6;
 }
