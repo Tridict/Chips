@@ -20,7 +20,7 @@ export const useJsonEditor = (initVal, options) => {
     console.log(aa);
     return JSON.stringify(aa);
   };
-  
+
   watchEffect(() => {
     if (initVal.value && jsonEditor.value) {
       setJeVal(initVal.value);

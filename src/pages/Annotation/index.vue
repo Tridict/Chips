@@ -1,10 +1,26 @@
 <template>
-  <UploadBox title="导入annotation" :drop="true" @onRead="onReadAnnotation" />
-  <DownloadBtn
-    filename="annotation.json"
-    :content="sentenceList"
-    btnText="导出annotation"
-  />
+  <div class="card my-3">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col">
+          <UploadBox
+            title="导入需要标注的文件"
+            :drop="true"
+            @onRead="onReadAnnotation"
+          />
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col">
+          <DownloadBtn
+            filename="annotation.json"
+            :content="JSON.stringify(sentenceList, null, 2)"
+            btnText="导出annotation"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
   <SentenceBox
     v-for="sentence in sentenceList"
     :key="sentence.id"
