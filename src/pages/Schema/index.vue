@@ -78,4 +78,8 @@ export default {
   background-color: #78acd9;
   border-color: #577bb5;
 }
+div.jsoneditor-object,
+div.jsoneditor-array {
+  display: none;
+}
 </style>
