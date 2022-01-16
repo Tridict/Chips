@@ -23,18 +23,18 @@ export default {
   props: {
     keys: {
       type: Object,
-      require: true
+      require: true,
     },
     options: {
       type: Array,
-      require: true
-    }
+      require: true,
+    },
   },
   emits: ["select"],
   setup(props, ctx) {
-    const annotations = props.keys.map((key) => {
+    const annotations = props.keys.map(key => {
       return {
-        key
+        key,
       };
     });
     const onSelect = (id, idx) => {
@@ -42,6 +42,6 @@ export default {
       ctx.emit("select", annotations);
     };
     return { onSelect };
-  }
+  },
 };
 </script>

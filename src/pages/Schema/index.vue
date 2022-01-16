@@ -61,10 +61,10 @@ export default {
     const updateSchema = inject("updateSchema");
     // const textarea = ref(schema.value);
     const { jecontainer, getJeVal, setJeVal } = useJsonEditor(schema, {
-      modes: ["form", "code", "tree", "view"]
+      modes: ["form", "code", "tree", "view"],
     });
 
-    const onImport = (fileContents) => {
+    const onImport = fileContents => {
       const content = fileContents.value[0]?.content;
       updateSchema(content);
     };
@@ -79,7 +79,7 @@ export default {
     };
 
     return { schema, jecontainer, onReset, onUpdate, onImport };
-  }
+  },
 };
 </script>
 

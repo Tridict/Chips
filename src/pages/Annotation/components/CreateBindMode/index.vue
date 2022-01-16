@@ -1,5 +1,10 @@
 <template>
-  <Select keys :options="indTagList" :selected="selectedTag" @select="onSelectTag" />
+  <Select
+    keys
+    :options="indTagList"
+    :selected="selectedTag"
+    @select="onSelectTag"
+  />
   <Happy
     v-if="ActiveAttrList?.attrs?.length"
     :keys="ActiveAttrList?.attrs"
@@ -8,7 +13,9 @@
   />
   <div class="row my-1">
     <div class="col">
-      <button type="button" class="btn btn-success btn-sm" @click="onSubmit">确定</button>
+      <button type="button" class="btn btn-success btn-sm" @click="onSubmit">
+        确定
+      </button>
     </div>
   </div>
 </template>
@@ -21,28 +28,31 @@ import { reactive, watch, toRefs, inject, computed } from "vue";
 export default {
   components: { Select, Happy },
   props: ["schema", "annotations", "sentenceId", "text"],
-  emits: ['finish'],
+  emits: ["finish"],
   setup(props, ctx) {
     const addAnnotation = inject("addAnnotation");
 
     const formattedAnnotations = computed(() => {
-      return props.annotations.map((x) => {
+      return props.annotations.map(x => {
         const item = x;
         const text = props.text;
         let face = item._tag
           ? `${item._tag}( ${text.slice(
-            item?.span?.[0] ?? 0,
-            item?.span?.[1] ?? 0
-          )} )`
+              item?.span?.[0] ?? 0,
+              item?.span?.[1] ?? 0,
+            )} )`
           : false || `${item?.content?.value}`;
         const faceFn = {
-          meta: () => `#${item?._id ?? "_"}: ${item?.content?.key}(${item?.content?.value})`,
+          meta: () =>
+            `#${item?._id ?? "_"}: ${item?.content?.key}(${
+              item?.content?.value
+            })`,
           annotation: () =>
             `#${item?._id ?? "_"}: ${item?._tag ?? "_"}(${text.slice(
               item?.span?.[0] ?? 0,
-              item?.span?.[1] ?? 0
+              item?.span?.[1] ?? 0,
             )}) span[${item?.span?.[0] ?? "_"},${item?.span?.[1] ?? "_"}]`,
-          CC: () => `#${item?._id ?? "_"}: ${item?._tag ?? "_"}()`
+          CC: () => `#${item?._id ?? "_"}: ${item?._tag ?? "_"}()`,
         };
         face = faceFn[item?._tagMode]();
         return { face, _id: item?._id };
@@ -53,11 +63,11 @@ export default {
       indTags: props.schema?.getIndTags() || [],
       indTagList: [],
       ActiveAttrList: [], // 在输入框展示的数据
-      selectedTag: ""
+      selectedTag: "",
     });
 
     const initIndTagList = () => {
-      data.indTagList = data.indTags.map((x) => {
+      data.indTagList = data.indTags.map(x => {
         return x.tagName;
       });
 
@@ -76,7 +86,7 @@ export default {
     const indTagHandlers = {
       // 点击“确定”按钮
       onSubmit: () => {
-        console.log(data.ActiveAttrList)
+        console.log(data.ActiveAttrList);
         // 提交当前数据
         if (!data.ActiveAttrList?.attrs?.length) {
           addAnnotation({
@@ -84,20 +94,20 @@ export default {
             annotation: {
               _tagMode: "CC",
               _tag: data.selectedTag,
-            }
+            },
           });
         } else {
-          data.indTags.forEach((x) => {
+          data.indTags.forEach(x => {
             if (!x.annotation?.length) {
               // console.log(x);
               return;
-            };
+            }
             const annotations = {};
             console.log(x.annotation);
-            x.annotation.forEach((y) => {
+            x.annotation.forEach(y => {
               // const notNil = (x) => !(x ?? true) || !! x;
-              // let jjj = notNil(y?.value?._id); 
-              console.log(y.value)
+              // let jjj = notNil(y?.value?._id);
+              console.log(y.value);
               if (y.value != null) {
                 annotations[y.key] = y.value;
               }
@@ -107,8 +117,8 @@ export default {
               annotation: {
                 _tagMode: "CC",
                 _tag: x.tagName,
-                ...annotations
-              }
+                ...annotations,
+              },
             });
             x.annotation = [];
           });
@@ -117,29 +127,29 @@ export default {
         // 清空
         // data.ActiveAttrList = [];
         data.selectedTag = "";
-        ctx.emit('finish');
+        ctx.emit("finish");
       },
 
       // 选择indTag
-      onSelectTag: (selectedThing) => {
+      onSelectTag: selectedThing => {
         data.ActiveAttrList = data.indTags.filter(
-          (x) => x.tagName === selectedThing
+          x => x.tagName === selectedThing,
         )[0];
         data.selectedTag = selectedThing;
       },
 
-      onSelectAttr: (selectedThing) => {
+      onSelectAttr: selectedThing => {
         data.ActiveAttrList.annotation = selectedThing;
         console.log(selectedThing);
-      }
+      },
     };
 
     return {
       ...toRefs(data),
       ...indTagHandlers,
-      formattedAnnotations
+      formattedAnnotations,
     };
-  }
+  },
 };
 </script>
 

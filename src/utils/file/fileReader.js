@@ -11,7 +11,7 @@ const readFileAsText = (fileWrap, options) => {
     if (options?.accept && !new RegExp(options?.accept).test(file.type)) {
       reject({
         code: 1,
-        msg: "wrong file type"
+        msg: "wrong file type",
       });
     }
     if (file.type === "application/json") {

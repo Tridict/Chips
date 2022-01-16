@@ -42,7 +42,7 @@ export default {
     const sentenceList = inject("sentenceList");
     const onReadAnnotation = inject("onReadAnnotation");
     return { sentenceList, onReadAnnotation };
-  }
+  },
 };
 </script>
 

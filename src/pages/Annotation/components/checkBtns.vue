@@ -61,27 +61,27 @@ export default {
   props: {
     options: {
       type: Array,
-      require: true
+      require: true,
     },
     showAdd: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   emits: ["check", "add"],
   setup(props, ctx) {
     const isShowInput = ref(false);
     const newTagName = ref("");
-    const onCheck = (idx) => {
+    const onCheck = idx => {
       ctx.emit("check", idx);
     };
-    const onAdd = (type) => {
+    const onAdd = type => {
       ctx.emit("add", type, newTagName.value);
       newTagName.value = "";
       isShowInput.value = false;
     };
 
     return { newTagName, isShowInput, onCheck, onAdd };
-  }
+  },
 };
 </script>

@@ -42,7 +42,7 @@ import NavBar from "@/components/NavBar.vue";
 
 const TABS = {
   annotation: Symbol(),
-  schema: Symbol()
+  schema: Symbol(),
 };
 
 export default {
@@ -55,6 +55,6 @@ export default {
     useAnnotation();
 
     return { tab, TABS };
-  }
+  },
 };
 </script>

@@ -37,14 +37,14 @@ export default {
   props: {
     options: {
       type: Array,
-      require: true
-    }
+      require: true,
+    },
   },
   emits: ["submit"],
   setup(props, ctx) {
     const input = reactive({
       key: props.options[0],
-      value: ""
+      value: "",
     });
     const onSubmit = () => {
       // 提交
@@ -55,6 +55,6 @@ export default {
       input.value = "";
     };
     return { input, onSubmit };
-  }
+  },
 };
 </script>

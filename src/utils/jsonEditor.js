@@ -6,7 +6,7 @@ export const useJsonEditor = (initVal, options) => {
   const jsonEditor = ref(null);
   const jecontainer = ref(null);
 
-  const setJeVal = (val) => {
+  const setJeVal = val => {
     if (typeof val === "string") {
       jsonEditor.value.set(JSON.parse(val));
     } else {
@@ -34,7 +34,7 @@ export const useJsonEditor = (initVal, options) => {
         if (newMode !== "code") {
           jsonEditor.value?.expandAll?.();
         }
-      }
+      },
     });
     setJeVal(initVal.value);
   });

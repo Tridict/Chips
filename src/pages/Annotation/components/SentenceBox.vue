@@ -28,18 +28,20 @@
                   <template v-for="(char, i) in content.text" :key="i">
                     <div
                       class="in-stc-btn text-btn"
-                      :name="i+',char'"
+                      :name="i + ',char'"
                       :class="getBtnClass(i, 'char')"
                     >
-                      <span :name="i+',char'">{{ char }}</span>
+                      <span :name="i + ',char'">{{ char }}</span>
                     </div>
                     <div
                       class="in-stc-btn space-btn"
                       :class="getBtnClass(i + 1, 'space')"
-                      :name="(i+1)+',space'"
+                      :name="i + 1 + ',space'"
                       :title="`${i + 1}号位置`"
                     >
-                      <span class="space-btn-idx" :name="(i+1)+',space'">{{ i + 1 }}</span>
+                      <span class="space-btn-idx" :name="i + 1 + ',space'">
+                        {{ i + 1 }}
+                      </span>
                     </div>
                   </template>
                 </div>
@@ -174,7 +176,7 @@
                         item._tag
                           ? `${item._tag}( ${content.text.slice(
                               item?.span?.[0] ?? 0,
-                              item?.span?.[1] ?? 0
+                              item?.span?.[1] ?? 0,
                             )} )`
                           : false || `${item?.content?.value}`
                       }}
@@ -223,17 +225,17 @@ export default {
   props: {
     title: {
       type: String,
-      require: true
+      require: true,
     },
     content: {
       type: Object,
       default: () => {
         return {
           text: "这是句子内容，算是body部分。一个字符串...",
-          annotations: []
+          annotations: [],
         };
-      }
-    }
+      },
+    },
   },
   emits: ["submit"],
   setup(props) {
@@ -249,7 +251,7 @@ export default {
       refTags: schema.getRefTags(),
       clueTags: schema.getClueTags(),
       indTags: schema.getIndTags(),
-      tagList: []
+      tagList: [],
     });
 
     const {
@@ -262,30 +264,30 @@ export default {
       clearSelect,
       getBtnClass,
       onHoverExistedAnnotations,
-      onHoverEnd
+      onHoverEnd,
     } = useSpan(data);
 
     const { jecontainer } = useJsonEditor(
       computed(() => props.content.annotations),
       {
-        modes: ["view", "code"]
-      }
+        modes: ["view", "code"],
+      },
     );
 
     const initTagList = () => {
       data.tagList = [
-        ...data.refTags.map((x) => {
+        ...data.refTags.map(x => {
           return {
             check: false,
-            text: x
+            text: x,
           };
         }),
-        ...data.clueTags.map((x) => {
+        ...data.clueTags.map(x => {
           return {
             check: false,
-            text: x
+            text: x,
           };
-        })
+        }),
       ];
 
       const watchTagList = (newVal, oldVal) => {
@@ -293,7 +295,7 @@ export default {
           const newItem = newVal[newVal.length - 1];
           data.tagList.push({
             check: false,
-            text: newItem
+            text: newItem,
           });
         }
       };
@@ -312,20 +314,20 @@ export default {
       },
 
       // 点击加号
-      onSubmitMeta: (input) => {
+      onSubmitMeta: input => {
         addAnnotation({
           id: props.content.id,
           annotation: {
             content: { key: input.key, value: input.value },
-            _tagMode: "meta"
-          }
+            _tagMode: "meta",
+          },
         });
-      }
+      },
     };
 
     const annotateHandlers = {
       // “注释”: 选择Tag
-      onCheckTag: (idx) => {
+      onCheckTag: idx => {
         data.tagList[idx].check = !data.tagList[idx].check;
       },
 
@@ -341,15 +343,15 @@ export default {
       // “注释”: 点击“确定”按钮
       onSubmitAnnotation: () => {
         // 提交当前数据
-        data.tagList.forEach((x) => {
+        data.tagList.forEach(x => {
           if (x.check) {
             addAnnotation({
               id: props.content.id,
               annotation: {
                 _tag: x.text,
                 span: selectedSpan.value,
-                _tagMode: "annotation"
-              }
+                _tagMode: "annotation",
+              },
             });
             x.check = false;
           }
@@ -357,7 +359,7 @@ export default {
         // 改变UI：可以开始下一段标注。
         clearSelect();
         btnStates.currentOpt = OPT_STATUS.ready;
-      }
+      },
     };
 
     return {
@@ -375,18 +377,16 @@ export default {
       // handleSelect,
       getBtnClass,
       onHoverExistedAnnotations,
-      onHoverEnd
+      onHoverEnd,
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
-
 .annotate-area .je-container {
   height: 16rem;
 }
-
 
 .bg-default {
   background-color: #dee2e6;

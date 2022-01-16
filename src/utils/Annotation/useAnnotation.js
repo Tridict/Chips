@@ -10,40 +10,40 @@ export const useAnnotation = () => {
         {
           content: {
             key: "todo",
-            value: "111"
+            value: "111",
           },
           _tagMode: "meta",
-          _id: 0
+          _id: 0,
         },
         {
           content: {
             key: "todo",
-            value: "222"
+            value: "222",
           },
           _tagMode: "meta",
-          _id: 1
+          _id: 1,
         },
         {
           _tagMode: "CC",
           _tag: "StartPoint",
           trigger: "#1",
           concretization: "#0",
-          _id: 2
-        }
-      ]
+          _id: 2,
+        },
+      ],
     },
     {
       id: 1,
       text: "一个字符串",
-      annotations: []
-    }
+      annotations: [],
+    },
   ]);
 
-  const addAnnotation = (pars) => {
+  const addAnnotation = pars => {
     if (sentenceList.value[pars.id]?.annotations) {
       sentenceList.value[pars.id].annotations.push({
         ...pars.annotation,
-        _id: sentenceList.value[pars.id].annotations.length
+        _id: sentenceList.value[pars.id].annotations.length,
       });
       console.log(sentenceList.value);
     } else {
@@ -52,7 +52,7 @@ export const useAnnotation = () => {
     }
   };
 
-  const onReadAnnotation = (fileContents) => {
+  const onReadAnnotation = fileContents => {
     const content = fileContents.value[0]?.content;
     let arr = [];
     try {
@@ -65,7 +65,7 @@ export const useAnnotation = () => {
       sentenceList.value.push({
         id: i,
         text: typeof x === "string" ? x : x.text,
-        annotations: x.annotations || []
+        annotations: x.annotations || [],
       });
     });
   };

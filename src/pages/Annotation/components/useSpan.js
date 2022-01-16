@@ -6,22 +6,22 @@ const OPT_STATUS = {
   ready: 1,
   selecting: 2,
   complete: 3,
-  annotate: 4
+  annotate: 4,
 };
 
 // 选取span过程中，文字按钮的样式控制
-const useSelect = (btnStates) => {
+const useSelect = btnStates => {
   const spanStates = reactive({
     leftId: undefined,
     leftType: "",
     rightId: undefined,
-    rightType: ""
+    rightType: "",
   });
   const spanStatesBackup = reactive({
     leftId: undefined,
     leftType: "",
     rightId: undefined,
-    rightType: ""
+    rightType: "",
   });
 
   const selectedSpan = computed(() => {
@@ -29,7 +29,7 @@ const useSelect = (btnStates) => {
       spanStates.leftId,
       spanStates.rightType === "char"
         ? spanStates.rightId + 1
-        : spanStates.rightId
+        : spanStates.rightId,
     ];
   });
 
@@ -61,7 +61,7 @@ const useSelect = (btnStates) => {
       leftId: undefined,
       leftType: "",
       rightId: undefined,
-      rightType: ""
+      rightType: "",
     });
   };
 
@@ -109,12 +109,12 @@ const useSelect = (btnStates) => {
   };
 
   // 鼠标移到已有标注上时，显示高亮
-  const onHoverExistedAnnotations = (span) => {
+  const onHoverExistedAnnotations = span => {
     Object.assign(spanStatesBackup, {
       leftId: span?.[0] || 0,
       leftType: "space",
       rightId: span?.[1] || 0,
-      rightType: "space"
+      rightType: "space",
     });
   };
 
@@ -123,7 +123,7 @@ const useSelect = (btnStates) => {
       leftId: undefined,
       leftType: "",
       rightId: undefined,
-      rightType: ""
+      rightType: "",
     });
   };
 
@@ -133,15 +133,15 @@ const useSelect = (btnStates) => {
     onHoverEnd,
     handleSelect,
     clearSelect,
-    getBtnClass
+    getBtnClass,
   };
 };
 
 // 注释模式选取span过程中的按钮状态改变及方法控制
-export const useSpan = (data) => {
+export const useSpan = data => {
   const btnStates = reactive({
     currentOpt: OPT_STATUS.readonly,
-    histroy: []
+    histroy: [],
   });
 
   // 根据btnStates计算出的html视图控制
@@ -165,10 +165,10 @@ export const useSpan = (data) => {
         "请选取要标注的文本片段的开始位置",
         "请选取要标注的文本片段的结束位置",
         "请确定",
-        "请开始标注或加入span列表"
+        "请开始标注或加入span列表",
       ];
       return infos[+btnStates.currentOpt];
-    })
+    }),
   });
 
   const select = useSelect(btnStates);
@@ -176,7 +176,7 @@ export const useSpan = (data) => {
   // 注释模式那几个按钮的handler
   const annotateBtn = {
     // 点击“新增span/重新选取”按钮
-    onStartOrReset: (event) => {
+    onStartOrReset: event => {
       if (btnStates.currentOpt > OPT_STATUS.ready) {
         select.clearSelect(); // 重新标注
       } else {
@@ -188,7 +188,7 @@ export const useSpan = (data) => {
     },
 
     // 点击“确定选取“按钮
-    onConfirm: (event) => {
+    onConfirm: event => {
       btnStates.currentOpt += 1;
       forceBlur(event);
     },
@@ -198,7 +198,7 @@ export const useSpan = (data) => {
       btnStates.currentOpt = OPT_STATUS.readonly;
       select.clearSelect();
       data.isShowAnnotation = false;
-    }
+    },
   };
 
   return {
@@ -206,6 +206,6 @@ export const useSpan = (data) => {
     btnStates,
     spanData,
     annotateBtn,
-    ...select
+    ...select,
   };
 };

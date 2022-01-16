@@ -1,9 +1,9 @@
-export const useDrag = (handleSelect) => {
+export const useDrag = handleSelect => {
   var bMouseUp = true;
   let start = "";
   let tmp = "";
 
-  const onDragItem = (elName) => {
+  const onDragItem = elName => {
     if (!elName) return;
     const [id, type] = elName.split(",");
     handleSelect(+id, type);

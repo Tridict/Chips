@@ -4,104 +4,104 @@ export const useSchema = () => {
   const schema = ref(
     JSON.stringify({
       meta: {
-        author: "luke"
+        author: "luke",
       },
       content: [
         {
           _type: "Slot",
           frame: "CMR_META",
-          key: "todo"
+          key: "todo",
         },
         {
           _type: "Slot",
           frame: "CMR_META",
-          key: "comment"
+          key: "comment",
         },
         {
           _type: "RefTag",
-          tagName: "Place"
+          tagName: "Place",
         },
         {
           _type: "RefTag",
-          tagName: "Shape"
+          tagName: "Shape",
         },
         {
           _type: "RefTag",
-          tagName: "Shape.Actor"
+          tagName: "Shape.Actor",
         },
         {
           _type: "RefTag",
-          tagName: "Shape.Vehicle"
+          tagName: "Shape.Vehicle",
         },
         {
           _type: "RefTag",
-          tagName: "Shape.Concave"
+          tagName: "Shape.Concave",
         },
         {
           _type: "RefTag",
-          tagName: "Shape.Part"
+          tagName: "Shape.Part",
         },
         {
           _type: "RefTag",
-          tagName: "Mass"
+          tagName: "Mass",
         },
         {
           _type: "RefTag",
-          tagName: "VisualPattern"
+          tagName: "VisualPattern",
         },
         {
           _type: "ClueTag",
-          tagName: "SpatialTrigger"
+          tagName: "SpatialTrigger",
         },
         {
           _type: "IndTag",
-          tagName: "StartPoint"
+          tagName: "StartPoint",
         },
         {
           _type: "IndTagAttr",
           parent: "StartPoint",
-          tagName: "trigger"
+          tagName: "trigger",
         },
         {
           _type: "IndTagAttr",
           parent: "StartPoint",
-          tagName: "concretization"
+          tagName: "concretization",
         },
         {
           _type: "IndTag",
-          tagName: "EndPoint"
+          tagName: "EndPoint",
         },
         {
           _type: "IndTagAttr",
           parent: "EndPoint",
-          tagName: "trigger"
+          tagName: "trigger",
         },
         {
           _type: "IndTagAttr",
           parent: "EndPoint",
-          tagName: "concretization"
+          tagName: "concretization",
         },
         {
           _type: "IndTag",
-          tagName: "Position"
+          tagName: "Position",
         },
         {
           _type: "IndTag",
-          tagName: "Direction"
+          tagName: "Direction",
         },
         {
           _type: "IndTag",
-          tagName: "Path"
+          tagName: "Path",
         },
         {
           _type: "IndTag",
-          tagName: "Region"
-        }
-      ]
-    })
+          tagName: "Region",
+        },
+      ],
+    }),
   );
 
-  const updateSchema = (newVal) => {
+  const updateSchema = newVal => {
     schema.value = newVal;
   };
 

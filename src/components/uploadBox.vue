@@ -26,7 +26,7 @@ export default {
   setup(props, ctx) {
     const { fileMetaList, onImportFiles, onDropFile } = useFile();
 
-    const onInput = async (event) => {
+    const onInput = async event => {
       const target = event.target;
       if (target instanceof HTMLInputElement && target.files) {
         await onImportFiles(target.files);
@@ -36,14 +36,14 @@ export default {
       }
     };
 
-    const onDrop = async (event) => {
+    const onDrop = async event => {
       const res = await onDropFile(event);
       if (res) {
         ctx.emit("onRead", fileMetaList);
       }
     };
     return { onDrop, onInput };
-  }
+  },
 };
 </script>
 

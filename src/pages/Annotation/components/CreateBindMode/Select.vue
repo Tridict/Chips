@@ -17,33 +17,33 @@ export default {
   props: {
     keys: {
       type: String,
-      require: true
+      require: true,
     },
     options: {
       type: Array,
-      require: true
+      require: true,
     },
     id: {
-      type: Number
+      type: Number,
     },
     selected: {
-      type: String
-    }
+      type: String,
+    },
   },
   emits: ["select"],
   setup(props, ctx) {
     const input = ref("");
     watch(
       () => props.selected,
-      (newVal) => {
+      newVal => {
         input.value = newVal;
-      }
+      },
     );
     watch(input, () => {
       ctx.emit("select", input.value, props.id);
     });
     return { input };
-  }
+  },
 };
 </script>
 

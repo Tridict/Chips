@@ -5,13 +5,13 @@ import { ref } from "vue";
 // 提供fileMetaList
 const useFile = () => {
   const fileMetaList = ref([]);
-  const onImportFiles = async (file) => {
+  const onImportFiles = async file => {
     // 默认的input框处理
     if (file instanceof FileList) {
       await readFileLists(file, fileMetaList.value);
     }
   };
-  const onDropFile = async (event) => {
+  const onDropFile = async event => {
     event.preventDefault();
 
     if (event.type == "drop") {
@@ -23,7 +23,7 @@ const useFile = () => {
     }
     return false;
   };
-  const onRemoveFile = (idx) => {
+  const onRemoveFile = idx => {
     fileMetaList.value.splice(idx, 1);
   };
 
@@ -39,7 +39,7 @@ const readFileLists = async (fileList, fileMetaList) => {
   }
   // 把文件保存为对象
   for (const file of files) {
-    if (fileMetaList.map((f) => f.name).includes(file.name)) {
+    if (fileMetaList.map(f => f.name).includes(file.name)) {
       // Notify(`文件【${file.name}】重复。`)
       console.log(`文件【${file.name}】重复。`);
     } else {
@@ -49,7 +49,7 @@ const readFileLists = async (fileList, fileMetaList) => {
         name: file.name,
         hasRead: false,
         encodingGot: false,
-        encoding: "utf-8"
+        encoding: "utf-8",
       });
     }
   }
