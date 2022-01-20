@@ -5,7 +5,7 @@
         <div class="col">
           <UploadBox
             title="导入需要标注的文件"
-            :drop="true"
+            :drop="false"
             @onRead="onReadAnnotation"
           />
         </div>
