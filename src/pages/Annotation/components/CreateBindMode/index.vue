@@ -13,9 +13,9 @@
   />
   <div class="row my-1">
     <div class="col">
-      <button type="button" class="btn btn-success btn-sm" @click="onSubmit">
-        确定
-      </button>
+      <button type="button" class="btn btn-success btn-sm" @click="onSubmit"
+        >确定</button
+      >
     </div>
   </div>
 </template>

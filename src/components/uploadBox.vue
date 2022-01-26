@@ -10,9 +10,8 @@
         @drop="onDrop"
         @dragenter="onDrop"
         @dragover="onDrop"
+        >把文件拖到此处</div
       >
-        把文件拖到此处
-      </div>
     </div>
   </div>
 </template>

@@ -58,9 +58,8 @@
                     :class="{ 'btn-success': isShowMetaInput }"
                     @click="onToggleMeta"
                     v-if="!isShowIndTags && !isShowAnnotation"
+                    >{{ isShowMetaInput ? "结束旁批" : "新增旁批" }}</button
                   >
-                    {{ isShowMetaInput ? "结束旁批" : "新增旁批" }}
-                  </button>
                   <!-- 创建-绑定 -->
                   <button
                     type="button"
@@ -68,9 +67,10 @@
                     :class="{ 'btn-success': isShowIndTags }"
                     @click="isShowIndTags = !isShowIndTags"
                     v-if="!isShowMetaInput && !isShowAnnotation"
+                    >{{
+                      isShowIndTags ? "完成复合对象" : "新增复合对象"
+                    }}</button
                   >
-                    {{ isShowIndTags ? "完成复合对象" : "新增复合对象" }}
-                  </button>
                   <!-- 注释模式 -->
                   <template v-if="!isShowIndTags && !isShowMetaInput">
                     <button
@@ -78,25 +78,22 @@
                       class="btn btn-primary btn-sm"
                       @click="onStartOrReset"
                       v-if="btnStates.currentOpt !== OPT_STATUS.ready"
+                      >{{ startBtnText }}</button
                     >
-                      {{ startBtnText }}
-                    </button>
                     <button
                       type="button"
                       class="btn btn-success btn-sm"
                       @click="onConfirm"
                       v-show="isShowConfirmBtn"
+                      >确定选取 {{ selectedSpan }}</button
                     >
-                      确定选取 {{ selectedSpan }}
-                    </button>
                     <button
                       v-if="btnStates.currentOpt > OPT_STATUS.readonly"
                       type="button"
                       class="btn btn-success btn-sm"
                       @click="onFinish"
+                      >结束标注</button
                     >
-                      结束标注
-                    </button>
                   </template>
                 </div>
               </div>
@@ -141,9 +138,8 @@
                     type="button"
                     class="btn btn-success btn-sm"
                     @click="onSubmitAnnotation"
+                    >确定</button
                   >
-                    确定
-                  </button>
                 </div>
               </div>
             </div>

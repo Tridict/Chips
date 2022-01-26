@@ -4,9 +4,8 @@
     type="button"
     class="btn btn-primary btn-sm"
     @click="download(content, filename)"
+    >{{ btnText }}</button
   >
-    {{ btnText }}
-  </button>
 </template>
 
 <script>
