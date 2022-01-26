@@ -4,7 +4,7 @@ module.exports = {
   publicPath: "/Crisps/",
   assetsDir: "static",
   outputDir: "docs",
-  productionSourceMap: false,
+  productionSourceMap: true,
   chainWebpack: config => {
     config.resolve.alias.set("@", resolve("src"));
   },

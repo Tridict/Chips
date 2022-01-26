@@ -1,12 +1,16 @@
 <template>
   <div class="card my-3">
     <div class="card-body">
-      <div class="row mb-2">
+      <div class="row">
         <div class="col">
           <UploadBox title="导入schema" @onRead="onImport" />
         </div>
       </div>
-      <div class="row mt-2">
+    </div>
+  </div>
+  <div class="card my-3">
+    <div class="card-body">
+      <div class="row">
         <div class="col">
           <DownloadBtn
             filename="schema.json"
