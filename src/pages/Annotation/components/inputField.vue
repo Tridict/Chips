@@ -21,9 +21,8 @@
             type="button"
             id="zz"
             @click="onSubmit"
+            >+</button
           >
-            +
-          </button>
         </div>
       </div>
     </div>

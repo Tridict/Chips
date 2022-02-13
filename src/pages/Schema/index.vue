@@ -36,16 +36,11 @@
             type="button"
             class="btn btn-success btn-sm m-1"
             @click="onReset"
+            >重置</button
           >
-            重置
-          </button>
-          <button
-            type="button"
-            class="btn btn-success btn-sm"
-            @click="onUpdate"
+          <button type="button" class="btn btn-success btn-sm" @click="onUpdate"
+            >更新</button
           >
-            更新
-          </button>
         </div>
       </div>
     </div>

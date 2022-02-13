@@ -8,9 +8,8 @@
           :class="tab == TABS.annotation ? 'active' : ''"
           href="#"
           @click="tab = TABS.annotation"
+          >标注</a
         >
-          标注
-        </a>
       </li>
       <li class="nav-item">
         <a
@@ -18,9 +17,8 @@
           :class="tab == TABS.schema ? 'active' : ''"
           href="#"
           @click="tab = TABS.schema"
+          >管理 Schema</a
         >
-          管理 Schema
-        </a>
       </li>
       <!-- <li class="nav-item">
         <a class="nav-link disabled">Disabled</a>

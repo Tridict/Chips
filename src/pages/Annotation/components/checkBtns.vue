@@ -9,17 +9,15 @@
           v-for="(option, idx) in options"
           :key="idx"
           @click="onCheck(idx)"
+          >{{ option.text }}</button
         >
-          {{ option.text }}
-        </button>
         <button
           type="button"
           class="btn btn-info btn-sm m-1"
           @click="isShowInput = true"
           v-if="showAdd"
+          >+</button
         >
-          +
-        </button>
         <template v-if="isShowInput">
           <input
             type="text"
@@ -31,23 +29,20 @@
             type="button"
             class="btn btn-success btn-sm m-1"
             @click="onAdd('ref')"
+            >新增RefTag</button
           >
-            新增RefTag
-          </button>
           <button
             type="button"
             class="btn btn-success btn-sm m-1"
             @click="onAdd('clue')"
+            >新增ClueTag</button
           >
-            新增ClueTag
-          </button>
           <button
             type="button"
             class="btn btn-light btn-sm m-1"
             @click="isShowInput = false"
+            >取消</button
           >
-            取消
-          </button>
         </template>
       </div>
     </div>
