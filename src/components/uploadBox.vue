@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="mb-2">
+    <div class="upload">
       <label class="form-label">{{ title }}</label>
       <input class="form-control" type="file" @input="onInput" multiple />
     </div>
-    <div class="card text-center p-5" v-if="drop">
+    <div class="card text-center p-5 mt-2" v-if="drop">
       <div
         ref="dropTarget"
         @drop="onDrop"
