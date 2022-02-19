@@ -510,6 +510,9 @@ hr.bg-default {
   border-color: #c2e7b0;
   background: #f0f9eb;
 }
+.in-stc-btn--selecting {
+  background: #fdf6ec;
+}
 
 .toolbar .btn {
   margin: 0 0.5em 0 0;

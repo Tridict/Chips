@@ -1,48 +1,60 @@
 export const useDrag = handleSelect => {
-  var bMouseUp = true;
+  let isSelecting = false;
   let start = "";
   let tmp = "";
 
-  const onDragItem = elName => {
+  const onDragItem = (elName, progress) => {
     if (!elName) return;
     const [id, type] = elName.split(",");
-    handleSelect(+id, type);
+    handleSelect(+id, type, progress);
   };
 
-  function dragDown(oPssEvt1) {
-    const e = oPssEvt1 || /* IE */ window.event;
-    bMouseUp = false;
-    // console.log("start");
+  function dragDown(event) {
+    isSelecting = true;
+    const e = event || /* IE */ window.event;
     const elName = e?.target?.getAttribute("name");
     if (elName) {
-      onDragItem(elName);
+      onDragItem(elName, "start");
       start = elName;
     }
     return false;
   }
 
-  function dragMove(oPssEvt2) {
-    if (bMouseUp) {
+  function dragMove(event) {
+    if (!isSelecting) {
       return;
     }
-    const e = oPssEvt2 || /* IE */ window.event;
+    const e = event || /* IE */ window.event;
     const elName = e?.target?.getAttribute("name");
     if (elName && elName !== start && elName !== tmp) {
-      tmp = elName;
-      console.log(tmp);
+      onDragItem(elName, "hover");
+    }
+    if (!elName) {
+      // 没在文字上移动...
+      console.log('move out?');
     }
   }
 
-  function dragUp(oPssEvt3) {
-    bMouseUp = true;
-    const e = oPssEvt3 || /* IE */ window.event;
+  function dragUp(event) {
+    isSelecting = false;
+    const e = event || /* IE */ window.event;
     const elName = e?.target?.getAttribute("name");
+    console.log("up on", elName);
     if (start !== elName) {
-      onDragItem(elName);
+      onDragItem(elName, "end");
+    } else {
+      handleSelect(0, "", "startAndEnd");
     }
     start = "";
     // console.log("end");
   }
 
-  return { dragDown, dragMove, dragUp };
+  function dragOut(event) {
+    const e = event || /* IE */ window.event;
+    const elName = e?.target?.getAttribute("name");
+    return elName;
+    // console.log(elName);
+  }
+
+  return { dragDown, dragMove, dragUp, dragOut };
 };

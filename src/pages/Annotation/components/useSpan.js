@@ -16,6 +16,8 @@ const useSelect = btnStates => {
     leftType: "",
     rightId: undefined,
     rightType: "",
+    selectionStartId: undefined,
+    selectingId: undefined,
   });
   const spanStatesBackup = reactive({
     leftId: undefined,
@@ -34,7 +36,22 @@ const useSelect = btnStates => {
   });
 
   // 选取文本片段
-  const handleSelect = (id, type) => {
+  const handleSelect = (id, type, selecting = "") => {
+    const d = type === "char" ? 1 : 0;
+    const selectingId = id * 2 + d;
+    if (selecting === "hover") {
+      spanStates.selectingId = selectingId;
+      return;
+    } else if (selecting === "start") {
+      spanStates.selectionStartId = selectingId;
+      spanStates.selectingId = selectingId;
+    } else if (selecting === "end") {
+      clearSelecting();
+    } else if (selecting === "startAndEnd") {
+      clearSelecting();
+      return;
+    }
+
     if (btnStates.currentOpt === OPT_STATUS.ready) {
       spanStates.leftId = id;
       spanStates.leftType = type;
@@ -52,7 +69,7 @@ const useSelect = btnStates => {
       btnStates.currentOpt += 1;
     }
 
-    btnStates.histroy.push(btnStates.currentOpt);
+    btnStates.history.push(btnStates.currentOpt);
   };
 
   // 重新标注：清除选择
@@ -63,10 +80,30 @@ const useSelect = btnStates => {
       rightId: undefined,
       rightType: "",
     });
+    clearSelecting();
+  };
+
+  // 放下鼠标
+  const clearSelecting = () => {
+    spanStates.selectionStartId = undefined;
+    spanStates.selectingId = undefined;
   };
 
   // 控制选取后的文字样式
   const getAnnotateBtnClass = (id, type) => {
+    // 长按拖拽选择过程中的类名
+    const d = type === "char" ? 1 : 0;
+    const currentId = id * 2 + d;
+
+    if (
+      spanStates.selectingId &&
+      ((spanStates.selectionStartId <= currentId && currentId <= spanStates.selectingId) ||
+        (spanStates.selectingId <= currentId && currentId <= spanStates.selectionStartId))
+    ) {
+      return "in-stc-btn--selecting";
+    }
+
+    // 确定选中的类名
     if (
       id == spanStates.rightId &&
       type == spanStates.rightType &&
@@ -141,7 +178,7 @@ const useSelect = btnStates => {
 export const useSpan = data => {
   const btnStates = reactive({
     currentOpt: OPT_STATUS.readonly,
-    histroy: [],
+    history: [],
   });
 
   // 根据btnStates计算出的html视图控制
